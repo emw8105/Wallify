@@ -1,59 +1,129 @@
 const axios = require('axios')
-const express = require('express');
-const app = express();
+const express = require('express')
+let SpotifyWebApi = require('spotify-web-api-node')
+//const getProfileData = require('./getProfile')
+
+
+//let token = 'BQBllng2s3Da9AE_92c9QCMbTpcicwEvjPMSHEQmv8-nJRsEWH2Tg5lGeb-eltNmPZojVvhYaGUO31p2OdrM_TNvB0KcOkCkaicHkPVYfgFYoFhHPyWryg9kaVKSg1YbTfhyMevSsHE--URtvVcCaujCCirJekHDnc-W2uR1wJzCYkis5WiOzg-naIQco0NaS3NFCSh4wgU'
+const clientId = 'e6b121f45f984d3a84d06fe0d5a89b6a'
+const clientSecret = '8b6c85920c1541ce9ce1dce65d0c72a1'
+const redirectUri = 'http://localhost:8888/callback'
+
+let spotify = new SpotifyWebApi({
+  clientId: clientId,
+  clientSecret: clientSecret,
+  redirectUri: redirectUri
+})
+
+const scopes = [
+  'user-top-read'
+]
+const app = express()
+
+app.get('/login', (req, res) => {
+  const authUrl = spotify.createAuthorizeURL(scopes)
+  console.log('Generated Authorization URL:', authUrl);
+  res.redirect(authUrl);
+});
+
+app.get('/callback', async (req, res) => {
+  const error = req.query.error;
+  const code = req.query.code;
+
+  if (error) {
+    console.error('Callback Error:', error);
+    res.send(`Callback Error: ${error}`);
+    return;
+  }
+
+  const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const data = new URLSearchParams({
+    'grant_type': 'authorization_code',
+    'code': code,
+    'redirect_uri': redirectUri,
+  });
+
+  const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': `Basic ${authHeader}`,
+  };
+
+  try {
+    const response = await axios.post('https://accounts.spotify.com/api/token', data, { headers });
+    const access_token = response.data.access_token;
+    const refresh_token = response.data.refresh_token;
+    const expires_in = response.data.expires_in;
+
+    console.log('access_token:', access_token);
+    console.log('refresh_token:', refresh_token);
+
+    console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`);
+    //getProfileData(access_token)
+    res.send('Success! You can now close the window.');
+
+    setInterval(async () => {
+      const refreshData = await axios.post('https://accounts.spotify.com/api/token', new URLSearchParams({
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token,
+      }), { headers });
+
+      const newAccessToken = refreshData.data.access_token;
+      console.log('The access token has been refreshed!');
+      console.log('access_token:', newAccessToken);
+    }, expires_in / 2 * 1000);
+  } catch (error) {
+    console.error('Error getting Tokens:', error);
+    res.send(`Error getting Tokens: ${error}`);
+  }
+});
+
+
+app.listen(8888, () =>
+  console.log(
+    'HTTP Server up. Now go to http://localhost:8888/login in your browser.'
+  )
+);
+
+
+
+
+
+
+
+
+
+
 
 console.log('running')
-
+// 'Authorization': `Bearer ${token}`
 const getToken = async() => {
-    let res = await axios.post({
-        url: "https://accounts.spotify.com/api/token",
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-    })
-    .then(response => {
-      console.log(response.data)
-      return response.data
-    })
-    // .catch(async err => {
-    //   if (err.response && err.response.status && err.response.status === 401 && retry < 3) {
-    //       console.error("Unauthorized: retrieving new token and retrying")
-    //       cachedAzureSecrets.Token = getNewAzureToken(cachedAzureSecrets)
-    //       return await updateRecord(req, cachedAzureSecrets.Token, ++retry)
-    //   }
-    //   if (err.response && err.response.status && err.response.status === 400) {
-    //       return err.response.data
-    //   }
-    //   if (retry >= 3) {
-    //     console.error("Call failing after multiple token retries: stopping process")
-    //   }
-    //   console.error(err)
-    //   return err
-    // })
-  return res
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: 'https://accounts.spotify.com/api/token',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Bearer ${clientId}:${clientSecret}`
+    },
+    data: {
+      'grant_type': 'client_credentials'
+    }
+  };
+  
+  axios.request(config)
+  .then((response) => {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 }
 
+// USE THIS API:
+// https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
+//https://api.spotify.com/v1/me/top/{type}
+// {type} is replaced by either 'artists' or 'tracks'
+// params: time_range = short_term, medium_term, long_term --> limit = 0-50 --> offset = 0 to whatever
 
 
-let cachedToken
-if (!cachedToken)
-    cachedToken = getToken()
-
-// const getTotalPlayers = async() => { // gets the current total player count to iterate until to print the whole leaderboard
-//     return await axios.get(`https://devildaggers.info/api/leaderboards?rankStart=1`).then(response => { return response.data.totalPlayers})}
-
-// (async () => {
-//     let start = 1, urls = [], end = 10000, playerCount = await getTotalPlayers()
-//     console.log(`Total players: ${playerCount}`)
-//     while(end <= playerCount) { // server doesnt like thousands of simultaneous requests, have to send chunks of requests
-//         while(start < end) {urls.push(`https://devildaggers.info/api/leaderboards?rankStart=${start}`), start+=100} // push next 100 URL requests onto array representing next 10000 players
-//         const requests = urls.map((url) => axios.get(url)); // map url requests to axios.get so requests can be made simultaneously with axios.all
-//         let res = await axios.all(requests)
-//         res.forEach(response => { // loop through JSON response and print entry information to populate the leaderboard
-//             response.data.entries.forEach(entry => {
-//             console.log(`Rank: ${entry.rank}\nid: ${entry.id}\nTime: ${entry.time}\nDeath Type: ${entry.deathType}\n\n`)
-//             })
-//         })
-//         end += 10000, urls = [] // update to get next 10000 players
-//     }
-// })()
+//let cachedToken = getToken()
