@@ -1,10 +1,11 @@
+// To-do: figure out module imports to use getProfile, then pass the token to getProfile and retrieve the account data
+// then have that function return the user_id or something so that the top tracks api can be requested?
+
 const axios = require('axios')
 const express = require('express')
 let SpotifyWebApi = require('spotify-web-api-node')
-//const getProfileData = require('./getProfile')
+const { getProfileData } = require('./getProfile')
 
-
-//let token = 'BQBllng2s3Da9AE_92c9QCMbTpcicwEvjPMSHEQmv8-nJRsEWH2Tg5lGeb-eltNmPZojVvhYaGUO31p2OdrM_TNvB0KcOkCkaicHkPVYfgFYoFhHPyWryg9kaVKSg1YbTfhyMevSsHE--URtvVcCaujCCirJekHDnc-W2uR1wJzCYkis5WiOzg-naIQco0NaS3NFCSh4wgU'
 const clientId = 'e6b121f45f984d3a84d06fe0d5a89b6a'
 const clientSecret = '8b6c85920c1541ce9ce1dce65d0c72a1'
 const redirectUri = 'http://localhost:8888/callback'
@@ -58,7 +59,7 @@ app.get('/callback', async (req, res) => {
     console.log('refresh_token:', refresh_token);
 
     console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`);
-    //getProfileData(access_token)
+    getProfileData(access_token)
     res.send('Success! You can now close the window.');
 
     setInterval(async () => {

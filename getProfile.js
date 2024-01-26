@@ -9,10 +9,14 @@ function getProfileData(token) {
 
     const profile = await spotify.getMe();
     console.log(profile.body);
-    getUserPlaylists(profile.body.id);
+    getUserTracks(profile.body.id);
   })().catch(e => {
     console.error(e);
   });
+}
+
+function getUserTracks(user_id) {
+
 }
 
 module.exports = {
