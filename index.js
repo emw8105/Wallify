@@ -1,14 +1,13 @@
-// To-do: figure out module imports to use getProfile, then pass the token to getProfile and retrieve the account data
-// then have that function return the user_id or something so that the top tracks api can be requested?
-
 const axios = require('axios')
 const express = require('express')
-let SpotifyWebApi = require('spotify-web-api-node')
-const { getProfileData } = require('./getProfile')
+require('dotenv').config();
 
-const clientId = 'e6b121f45f984d3a84d06fe0d5a89b6a'
-const clientSecret = '8b6c85920c1541ce9ce1dce65d0c72a1'
-const redirectUri = 'http://localhost:8888/callback'
+let SpotifyWebApi = require('spotify-web-api-node')
+const { getProfileData, getUserTracks } = require('./getProfile')
+
+const clientId = process.env.CLIENT_ID;
+const clientSecret = process.env.CLIENT_SECRET;
+const redirectUri = process.env.REDIRECT_URI;
 
 let spotify = new SpotifyWebApi({
   clientId: clientId,
@@ -60,6 +59,11 @@ app.get('/callback', async (req, res) => {
 
     console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`);
     getProfileData(access_token)
+    let topData = await getUserTracks(access_token, 0);
+    topData += await getUserTracks(access_token, 50)
+    console.log(topData.items[0].name)
+
+
     res.send('Success! You can now close the window.');
 
     setInterval(async () => {
@@ -85,46 +89,8 @@ app.listen(8888, () =>
   )
 );
 
-
-
-
-
-
-
-
-
-
-
-console.log('running')
-// 'Authorization': `Bearer ${token}`
-const getToken = async() => {
-  let config = {
-    method: 'post',
-    maxBodyLength: Infinity,
-    url: 'https://accounts.spotify.com/api/token',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Bearer ${clientId}:${clientSecret}`
-    },
-    data: {
-      'grant_type': 'client_credentials'
-    }
-  };
-  
-  axios.request(config)
-  .then((response) => {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-}
-
 // USE THIS API:
 // https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
-//https://api.spotify.com/v1/me/top/{type}
+// https://api.spotify.com/v1/me/top/{type}
 // {type} is replaced by either 'artists' or 'tracks'
 // params: time_range = short_term, medium_term, long_term --> limit = 0-50 --> offset = 0 to whatever
-
-
-//let cachedToken = getToken()
