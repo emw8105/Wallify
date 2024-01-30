@@ -49,31 +49,31 @@ app.get('/callback', async (req, res) => {
   };
 
   try {
-    const response = await axios.post('https://accounts.spotify.com/api/token', data, { headers });
+    const response = await axios.post('https://accounts.spotify.com/api/token', data, { headers })
     const access_token = response.data.access_token;
     const refresh_token = response.data.refresh_token;
     const expires_in = response.data.expires_in;
 
-    console.log('access_token:', access_token);
-    console.log('refresh_token:', refresh_token);
+    console.log('access_token:', access_token)
+    console.log('refresh_token:', refresh_token)
 
-    console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`);
+    console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`)
 
     // these requests are perfectly fine (up to 49 to prevent duplicate)
-    const topData = await getUserTracks(access_token, 0, 49);
-    const nextData = await getUserTracks(access_token, 49, 50);
+    let topData = await getTopArtists(access_token)
+    //topData.concat(await getUserTracks(access_token, 49, 50))
 
     // these requests return nothing because for some reason any thing that requests artist #100+ returns nothing at all
-    const temp = await getUserTracks(access_token, 99, 1);
-    const temp2 = await getUserTracks(access_token, 150, 1);
+    //const temp = await getUserTracks(access_token, 99, 1);
+    //const temp2 = await getUserTracks(access_token, 150, 1);
     //console.log(JSON.stringify(topData))
     const artistNames = topData.map(artist => artist.name)
-    const nextNames = nextData.map(artist => artist.name)
+    //const nextNames = nextData.map(artist => artist.name)
     console.log(artistNames)
-    console.log(nextNames)
+    //console.log(nextNames)
     //console.log(artistNames)
     console.log(`NUMBER OF ARTISTS RETURNED: ${topData.length}`)
-    console.log(`NUMBER OF ARTISTS RETURNED: ${nextData.length}`)
+    //console.log(`NUMBER OF ARTISTS RETURNED: ${nextData.length}`)
 
 
     // PUT REACT COMPONENTS TO BUILD A VISUAL USING THE ARTIST IMAGES
@@ -101,9 +101,3 @@ app.listen(8888, () =>
     'HTTP Server up. Now go to http://localhost:8888/login in your browser.'
   )
 );
-
-// USE THIS API:
-// https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
-// https://api.spotify.com/v1/me/top/{type}
-// {type} is replaced by either 'artists' or 'tracks'
-// params: time_range = short_term, medium_term, long_term --> limit = 0-50 --> offset = 0 to whatever

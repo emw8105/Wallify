@@ -39,25 +39,22 @@ const getUserTracks = async(token, offset, limit) => {
   return res
 }
 
-const getTopArtists = async (token, limit) => {
+const getTopArtists = async (token) => {
   const requests = [];
-  let totalArtists = [];
-  let offset = 0;
 
-  // Make multiple requests until you reach the desired limit
-  while (totalArtists.length < limit) {
-    console.log(`getting tracks from ${offset} to ${offset + 50}`);
-    const currentData = await getUserTracks(token, limit - totalArtists.length, offset);
+  requests.push(getUserTracks(token, 0, 49))
+  requests.push(getUserTracks(token, 49, 50))
 
-    // Check if 'currentData' is defined before accessing 'items'
-    const items = currentData || [];
-    totalArtists = totalArtists.concat(items);
+  try {
+    const results = await Promise.all(requests);
+    // Concatenate the arrays
+    const topArtists = results.flat();
 
-    offset += 50;
+    return topArtists // Return only the desired number of artists
+  } catch (error) {
+    console.error(error);
+    throw error; // Rethrow the error if needed
   }
-
-  // Return only the desired number of artists
-  return totalArtists.slice(0, limit);
 };
 
 module.exports = {
