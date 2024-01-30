@@ -1,6 +1,7 @@
 const axios = require('axios')
 const express = require('express')
 require('dotenv').config();
+import React, { useState, useEffect } from 'react';
 
 let SpotifyWebApi = require('spotify-web-api-node')
 const { getProfileData, getUserTracks, getTopArtists } = require('./utilities')
@@ -59,22 +60,15 @@ app.get('/callback', async (req, res) => {
 
     console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`)
 
-    // these requests are perfectly fine (up to 49 to prevent duplicate)
+    // PUT REACT COMPONENTS TO BUILD A VISUAL FOR MENU CHOICES
+
+    // based on those menu choices, endpoint might need to be changed (i.e. tracks vs artists, length of time, etc.)
+    // can only get up to 99 artists
     let topData = await getTopArtists(access_token)
-    //topData.concat(await getUserTracks(access_token, 49, 50))
 
-    // these requests return nothing because for some reason any thing that requests artist #100+ returns nothing at all
-    //const temp = await getUserTracks(access_token, 99, 1);
-    //const temp2 = await getUserTracks(access_token, 150, 1);
-    //console.log(JSON.stringify(topData))
     const artistNames = topData.map(artist => artist.name)
-    //const nextNames = nextData.map(artist => artist.name)
     console.log(artistNames)
-    //console.log(nextNames)
-    //console.log(artistNames)
     console.log(`NUMBER OF ARTISTS RETURNED: ${topData.length}`)
-    //console.log(`NUMBER OF ARTISTS RETURNED: ${nextData.length}`)
-
 
     // PUT REACT COMPONENTS TO BUILD A VISUAL USING THE ARTIST IMAGES
     res.send('Success! You can now close the window.');
