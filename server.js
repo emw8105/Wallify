@@ -18,12 +18,14 @@ let spotify = new SpotifyWebApi({
 
 const scopes = ['user-top-read'];
 
+// route for login, redirects to spotify login page
 app.get('/login', (req, res) => {
   const authUrl = spotify.createAuthorizeURL(scopes);
   console.log('Generated Authorization URL:', authUrl);
   res.redirect(authUrl);
 });
 
+// route for callback, retrieves tokens and redirects back to React app
 app.get('/callback', async (req, res) => {
   const error = req.query.error;
   const code = req.query.code;
@@ -63,12 +65,6 @@ app.get('/callback', async (req, res) => {
     console.log('refresh_token:', refresh_token);
     console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`);
 
-    // res.json({
-    //   access_token: access_token,
-    //   refresh_token: refresh_token,
-    //   expires_in: expires_in
-    // });
-
     // Redirect to React app with tokens as query parameters
     res.redirect(`http://localhost:3000?access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`);
   } catch (error) {
@@ -84,7 +80,7 @@ app.get('/top-artists', async (req, res) => {
   const accessToken = req.headers.authorization.split(' ')[1];
 
   try {
-    const topData = await getTopArtists(accessToken); // Assuming getTopArtists is your existing function
+    const topData = await getTopContent(accessToken, "artists"); // Assuming getTopArtists is your existing function
     res.json(topData); // Send the top artists as JSON
   } catch (error) {
     console.error('Error fetching top artists:', error);
@@ -92,29 +88,47 @@ app.get('/top-artists', async (req, res) => {
   }
 });
 
-const getTopArtists = async (token) => {
+// route for getting top artists
+app.get('/top-tracks', async (req, res) => {
+  console.log('GET /top-tracks');
+  const accessToken = req.headers.authorization.split(' ')[1];
+
+  try {
+    const topData = await getTopContent(accessToken, "tracks"); // Assuming getTopArtists is your existing function
+    res.json(topData); // Send the top artists as JSON
+  } catch (error) {
+    console.error('Error fetching top tracks:', error);
+    res.status(500).send('Error fetching top tracks');
+  }
+});
+
+
+
+// used to manage the api requests to get the top artists or tracks
+const getTopContent = async (token, content) => {
   const limit = 50;
-  const totalArtists = 99; // Adjust this if you need more or fewer artists
+  const totalContent = 99; // max number of artists or tracks to fetch
   const requests = [];
 
-  for (let offset = 0; offset < totalArtists; offset += limit) {
-    requests.push(getUserTracks(token, offset, limit));
+  for (let offset = 0; offset < totalContent; offset += limit) {
+    requests.push(getUserContent(token, offset, limit, content));
   }
 
   try {
     const results = await Promise.all(requests);
-    const topArtists = results.flat(); // Flatten the array of arrays into a single array
+    const topContent = results.flat(); // Flatten the array of arrays into a single array
 
-    return topArtists.slice(0, totalArtists); // Return only the desired number of artists
+    return topContent.slice(0, totalContent); // Return only the desired number of artists
   } catch (error) {
-    console.error('Error fetching top artists:', error);
+    console.error(`Error fetching top ${content}:`, error);
     throw error; // Rethrow the error if needed
   }
 };
 
-const getUserTracks = async (token, offset, limit) => {
+// function makes an api request to retrieve user content, either tracks or artists
+const getUserContent = async (token, offset, limit, content) => {
   try {
-    const response = await axios.get('https://api.spotify.com/v1/me/top/artists', {
+    const response = await axios.get(`https://api.spotify.com/v1/me/top/${content}`, {
       params: {
         limit,
         offset,

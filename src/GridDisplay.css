@@ -1,0 +1,22 @@
+.grid-container {
+    padding: 20px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 1200px;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  
+  .grid-item {
+    text-align: center;
+    color: white;
+  }
+  
+  .grid-item img {
+    width: 100%;
+    border-radius: 8px;
+  }

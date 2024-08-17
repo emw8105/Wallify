@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import GridDisplay from './GridDisplay';
 
 const TopArtists = ({ accessToken }) => {
   const [artists, setArtists] = useState([]);
@@ -24,13 +25,13 @@ const TopArtists = ({ accessToken }) => {
   };
 
   return (
-    <div><h1>Your Top Artists</h1><button onClick={handleGenerateArtists}>Generate Top Artists</button>
+    <div>
+      <h1>Your Top Artists</h1>
+      <button onClick={handleGenerateArtists}>Generate Top Artists</button>
       {artists.length > 0 && (
-        <ul>
-          {artists.map((artist, index) => (
-            <li key={index}>{artist.name}</li>
-          ))}
-        </ul>
+        <>
+          <GridDisplay artists={artists} />
+        </>
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React from 'react';
+import './Login.css';
 
 const Login = () => {
   const handleLogin = () => {
@@ -6,7 +7,12 @@ const Login = () => {
   };
 
   return (
-    <div><h1>Welcome to SpotiWall</h1><button onClick={handleLogin}>Log in with Spotify</button></div>
+    <div className="login-container">
+      <h1>Welcome to SpotiWall</h1>
+      <button onClick={handleLogin} className="login-button">
+        Log in with Spotify
+      </button>
+    </div>
   );
 };
 

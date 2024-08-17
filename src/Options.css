@@ -1,0 +1,34 @@
+/* Options.css */
+.options-container {
+    padding: 20px;
+    background-color: #282828; /* Slightly lighter dark theme */
+    border-radius: 8px;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+    color: white;
+  }
+  
+  .options-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .options-container form label {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .options-container button {
+    background-color: #1db954;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .options-container button:hover {
+    background-color: #1ed760;
+  }  
