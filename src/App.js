@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Login from './Login';
 import Options from './Options';
 import TopArtists from'./TopArtists';
-import axios from 'axios';
 
 const App = () => {
   // login and tokens
@@ -18,9 +17,8 @@ const App = () => {
   const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
   const [generateGrid, setGenerateGrid] = useState(false);
   const [artists, setArtists] = useState([]);
-
   
-  // Fetch tokens from the backend
+  // fetch the tokens from the URL parameters and save them to the state
   useEffect(() => {
     if (!tokensFetchedRef.current) {
       const params = new URLSearchParams(window.location.search);
@@ -34,7 +32,7 @@ const App = () => {
         setExpiresIn(paramExpiresIn);
         setIsLoggedIn(true);
 
-        tokensFetchedRef.current = true; // Prevent further execution of this block
+        tokensFetchedRef.current = true; // prevent repeated fetching
 
         console.log('Tokens fetched: ' + JSON.stringify({
           accessToken: paramAccessToken,
@@ -42,19 +40,21 @@ const App = () => {
           expiresIn: paramExpiresIn
         }));
 
-        // Clear the URL parameters to prevent reuse
+        // clear the URL parameters after saving the values to prevent reuse
         window.history.replaceState({}, document.title, "/");
       }
     }
   }, []);
 
+  // gather the user's desired generation options and trigger the grid generation
   const handleOptionsSubmit = (type, size, includePic) => {
     setSelectionType(type);
     setGridSize(size);
     setIncludeProfilePicture(includePic);
-    setGenerateGrid(true); // Trigger grid generation
+    setGenerateGrid(true);
   };
 
+  // if the user is not logged in, display the login component, otherwise display the options and the subsequent results after submission
   return (
     <div className={isLoggedIn ? 'app-container' : 'login-container'}>
       {!isLoggedIn ? (

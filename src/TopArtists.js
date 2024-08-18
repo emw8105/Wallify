@@ -31,8 +31,7 @@ const TopArtists = ({ accessToken, selectionType, gridSize, includeProfilePictur
       {artists.length > 0 && (
         <GridDisplay
           artists={artists}
-          gridX={gridSize.x}
-          gridY={gridSize.y}
+          gridSize={gridSize}
           includeProfilePicture={includeProfilePicture}
         />
       )}
