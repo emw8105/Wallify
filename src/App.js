@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Login from './Login';
 import Options from './Options';
-import GridDisplay from './GridDisplay';
 import TopArtists from'./TopArtists';
 import axios from 'axios';
 
@@ -17,7 +16,8 @@ const App = () => {
   const [selectionType, setSelectionType] = useState('artists');
   const [gridSize, setGridSize] = useState({ x: 3, y: 3 });
   const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
-  const [topArtists, setTopArtists] = useState([]);
+  const [generateGrid, setGenerateGrid] = useState(false);
+  const [artists, setArtists] = useState([]);
 
   
   // Fetch tokens from the backend
@@ -48,22 +48,28 @@ const App = () => {
     }
   }, []);
 
-  const handleSubmit = (type, size, includePic) => {
+  const handleOptionsSubmit = (type, size, includePic) => {
     setSelectionType(type);
     setGridSize(size);
     setIncludeProfilePicture(includePic);
+    setGenerateGrid(true); // Trigger grid generation
   };
 
-  // if the user is not logged in, redirect to the login page, else give them the options menu for wallpaper generation
   return (
     <div className={isLoggedIn ? 'app-container' : 'login-container'}>
       {!isLoggedIn ? (
         <Login />
       ) : (
         <>
-          <Options onSubmit={handleSubmit} />
-          <TopArtists accessToken={accessToken} />
-          {/* GridDisplay component will be added once artists are fetched */}
+          <Options onSubmit={handleOptionsSubmit} />
+          {generateGrid && (
+            <TopArtists
+              accessToken={accessToken}
+              selectionType={selectionType}
+              gridSize={gridSize}
+              includeProfilePicture={includeProfilePicture}
+            />
+          )}
         </>
       )}
     </div>

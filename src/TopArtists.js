@@ -1,37 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import GridDisplay from './GridDisplay';
 
-const TopArtists = ({ accessToken }) => {
+const TopArtists = ({ accessToken, selectionType, gridSize, includeProfilePicture }) => {
   const [artists, setArtists] = useState([]);
 
-  const getTopArtists = async () => {
-    try {
-      const response = await axios.get('http://localhost:8888/top-artists', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.log('Error fetching top artists: ' + error.message);
-      return [];
-    }
-  };
+  useEffect(() => {
+    const fetchTopArtists = async () => {
+      try {
+        const response = await axios.get('http://localhost:8888/top-artists', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            type: selectionType,
+          },
+        });
+        setArtists(response.data);
+      } catch (error) {
+        console.error('Error fetching top artists:', error.message);
+      }
+    };
 
-  const handleGenerateArtists = async () => {
-    const fetchedArtists = await getTopArtists();
-    setArtists(fetchedArtists);
-  };
+    fetchTopArtists();
+  }, [accessToken, selectionType]);
 
   return (
     <div>
       <h1>Your Top Artists</h1>
-      <button onClick={handleGenerateArtists}>Generate Top Artists</button>
       {artists.length > 0 && (
-        <>
-          <GridDisplay artists={artists} />
-        </>
+        <GridDisplay
+          artists={artists}
+          gridX={gridSize.x}
+          gridY={gridSize.y}
+          includeProfilePicture={includeProfilePicture}
+        />
       )}
     </div>
   );
