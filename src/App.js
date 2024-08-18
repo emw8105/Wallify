@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Login from './Login';
 import Options from './Options';
-import TopArtists from'./TopArtists';
+import TopContent from'./TopContent';
 
 const App = () => {
   // login and tokens
@@ -62,7 +62,7 @@ const App = () => {
         <>
           <Options onSubmit={handleOptionsSubmit} />
           {generateGrid && (
-            <TopArtists
+            <TopContent
               accessToken={accessToken}
               selectionType={selectionType}
               gridSize={gridSize}
