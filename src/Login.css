@@ -9,12 +9,15 @@
   body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     background: linear-gradient(135deg, rgba(18,18,18,1) 0%, rgba(34,34,34,1) 50%, rgba(0,0,0,1) 100%);
+    background-size: cover;
+    background-attachment: fixed;
     color: #fff;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   
   /* Main Container */
@@ -79,5 +82,7 @@
     background-position: center;
     opacity: 0.2;
     z-index: -1;
+    overflow-y: auto;
+    height: 100%;
   }
   

@@ -16,7 +16,6 @@ const App = () => {
   const [gridSize, setGridSize] = useState({ x: 3, y: 3 });
   const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
   const [generateGrid, setGenerateGrid] = useState(false);
-  const [artists, setArtists] = useState([]);
   
   // fetch the tokens from the URL parameters and save them to the state
   useEffect(() => {
