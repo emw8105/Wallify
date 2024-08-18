@@ -9,8 +9,6 @@
   body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     background: linear-gradient(135deg, rgba(18,18,18,1) 0%, rgba(34,34,34,1) 50%, rgba(0,0,0,1) 100%);
-    background-size: cover;
-    background-attachment: fixed;
     color: #fff;
     min-height: 100vh;
     display: flex;
@@ -18,6 +16,22 @@
     align-items: center;
     overflow-x: hidden;
     overflow-y: auto;
+    position: relative;
+  }
+  
+  /* Background Image */
+  body::before {
+    content: '';
+    position: fixed; /* Change this from absolute to fixed */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('spotify-header.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    z-index: -1;
   }
   
   /* Main Container */
@@ -67,22 +81,5 @@
     width: 24px;
     height: 24px;
     margin-right: 10px;
-  }
-  
-  /* Background Image */
-  body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('spotify-header.jpg');
-    background-size: cover;
-    background-position: center;
-    opacity: 0.2;
-    z-index: -1;
-    overflow-y: auto;
-    height: 100%;
   }
   
