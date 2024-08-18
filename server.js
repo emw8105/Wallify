@@ -78,10 +78,11 @@ app.get('/callback', async (req, res) => {
 app.get('/top-artists', async (req, res) => {
   console.log('GET /top-artists');
   const accessToken = req.headers.authorization.split(' ')[1];
+  const { limit } = req.query; // Get the limit from the query params
 
   try {
-    const topData = await getTopContent(accessToken, "artists"); // Assuming getTopArtists is your existing function
-    res.json(topData); // Send the top artists as JSON
+    const topData = await getTopContent(accessToken, "artists", parseInt(limit, 10));
+    res.json(topData); 
   } catch (error) {
     console.error('Error fetching top artists:', error);
     res.status(500).send('Error fetching top artists');
@@ -92,10 +93,11 @@ app.get('/top-artists', async (req, res) => {
 app.get('/top-tracks', async (req, res) => {
   console.log('GET /top-tracks');
   const accessToken = req.headers.authorization.split(' ')[1];
+  const { limit } = req.query; // Get the limit from the query params
 
   try {
-    const topData = await getTopContent(accessToken, "tracks"); // Assuming getTopArtists is your existing function
-    res.json(topData); // Send the top artists as JSON
+    const topData = await getTopContent(accessToken, "tracks", parseInt(limit, 10));
+    res.json(topData);
   } catch (error) {
     console.error('Error fetching top tracks:', error);
     res.status(500).send('Error fetching top tracks');
@@ -105,20 +107,19 @@ app.get('/top-tracks', async (req, res) => {
 
 
 // used to manage the api requests to get the top artists or tracks
-const getTopContent = async (token, content) => {
-  const limit = 50;
-  const totalContent = 99; // max number of artists or tracks to fetch
+const getTopContent = async (token, content, totalContent) => {
+  const limit = 50;  // Spotify's API limit per request
   const requests = [];
 
   for (let offset = 0; offset < totalContent; offset += limit) {
-    requests.push(getUserContent(token, offset, limit, content));
+    const requestLimit = Math.min(limit, totalContent - offset);
+    requests.push(getUserContent(token, offset, requestLimit, content));
   }
 
   try {
     const results = await Promise.all(requests);
     const topContent = results.flat(); // Flatten the array of arrays into a single array
-
-    return topContent.slice(0, totalContent); // Return only the desired number of artists
+    return topContent.slice(0, totalContent); // Return only the exact number of items requested
   } catch (error) {
     console.error(`Error fetching top ${content}:`, error);
     throw error; // Rethrow the error if needed

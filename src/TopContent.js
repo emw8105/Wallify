@@ -9,12 +9,18 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
     const fetchTopContent = async () => {
       try {
         // dynamically determine the endpoint based on the selection type
-        const content = selectionType === 'artists' ? 'top-artists' : 'top-tracks';
-        const response = await axios.get(`http://localhost:8888/${content}`, {
+        const contentType = selectionType === 'artists' ? 'top-artists' : 'top-tracks';
+        const totalItems = gridSize.x * gridSize.y; // calculate total number of items
+        const response = await axios.get(`http://localhost:8888/${contentType}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
+          params: {
+            limit: totalItems, // pass the requested number of items to the backend
+          },
         });
+        
+        console.log(`Successfully fetched top ${selectionType}:`, response.data);
         setContent(response.data);
       } catch (error) {
         console.error(`Error fetching top ${selectionType}:`, error.message);
@@ -22,13 +28,12 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
     };
 
     fetchTopContent();
-  }, [accessToken, selectionType]);
+  }, [accessToken, selectionType, gridSize]);
 
   return (
     <div>
       <h1>Your Top {selectionType.charAt(0).toUpperCase() + selectionType.slice(1)}</h1>
       {content.length > 0 && (
-        console.log(content),
         <GridDisplay
           content={content}
           gridSize={gridSize}

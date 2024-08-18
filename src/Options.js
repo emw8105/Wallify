@@ -8,6 +8,11 @@ const Options = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const totalItems = gridSize.x * gridSize.y;
+    if (totalItems > 99) {
+        alert('The maximum number of artists/tracks you can request is 99. Please adjust your grid size.');
+        return;
+    }
     onSubmit(selectionType, gridSize, includeProfilePicture);
   };
 
