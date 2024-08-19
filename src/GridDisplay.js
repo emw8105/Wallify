@@ -17,27 +17,16 @@ const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureU
         gridTemplateRows: `repeat(${gridSize.y}, auto)`,};
 
   return (
-    <div
-      className="grid-container"
-      style={backgroundStyle}
-    >
+    <div className="grid-container" style={backgroundStyle}>
       {contentToDisplay.map((contentInstance, index) => {
-        // image url is stored in different json fields depending on the type of content
-        // for artists, the image url is in the 'images' field, while for tracks, we pull the album image so we go to the 'album.images' field
-        
-        // determine if the artist is an artist or a track based on the response structure
         const imageUrl = contentInstance.images
-          ? contentInstance.images[0].url // artist case
-          : contentInstance.album.images[0].url; // track case
+          ? contentInstance.images[0].url
+          : contentInstance.album.images[0].url;
 
         return (
-          <div
-            key={index}
-            className="grid-item"
-            style={{
-              backgroundImage: `url(${imageUrl})`,
-            }}
-          />
+          <div key={index} className="grid-item">
+            <img src={imageUrl} alt="Grid content" />
+          </div>
         );
       })}
       {includeProfilePicture && profilePictureUrl && (

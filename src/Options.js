@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Options.css';
+import html2canvas from 'html2canvas';
 
 const Options = ({ onSubmit }) => {
   const [selectionType, setSelectionType] = useState('artists');
@@ -8,6 +9,23 @@ const Options = ({ onSubmit }) => {
   const [useGradient, setUseGradient] = useState(false);
   const [color1, setColor1] = useState('#ffffff');
   const [color2, setColor2] = useState('#000000');
+  const [isGridGenerated, setIsGridGenerated] = useState(false);
+
+  const handleDownload = () => {
+    const gridElement = document.querySelector('.grid-container');
+  html2canvas(gridElement, {
+    allowTaint: true, // Allow cross-origin images
+    useCORS: true, // Enable cross-origin resource sharing
+    scrollX: 0, // Prevent capturing the scroll position
+    scrollY: 0, // Prevent capturing the scroll position
+    backgroundColor: null, // Avoid adding a default background color
+  }).then((canvas) => {
+    const link = document.createElement('a');
+    link.download = 'spotiwall-grid.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,6 +34,7 @@ const Options = ({ onSubmit }) => {
         alert('The maximum number of artists/tracks you can request is 99. Please adjust your grid size.');
         return;
     }
+    setIsGridGenerated(true);
     onSubmit(selectionType, gridSize, includeProfilePicture, useGradient, color1, color2);
   };
 
@@ -92,6 +111,9 @@ const Options = ({ onSubmit }) => {
         )}
         <button type="submit">Generate</button>
       </form>
+      {isGridGenerated && (
+        <button onClick={handleDownload}>Download</button>
+      )}
     </div>
   );
 };
