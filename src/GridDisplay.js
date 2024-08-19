@@ -1,7 +1,7 @@
 import React from 'react';
 import './GridDisplay.css';
 
-const GridDisplay = ({ content, gridSize, includeProfilePicture }) => {
+const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureUrl }) => {
   // calculate the maximum number of images based on the grid size
   const maxArtists = gridSize.x * gridSize.y;
 
@@ -36,17 +36,9 @@ const GridDisplay = ({ content, gridSize, includeProfilePicture }) => {
           />
         );
       })}
-      {includeProfilePicture && (
-        <div
-          className="grid-item profile-picture"
-          style={{
-            width: 100,
-            height: 100,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          <img src="YOUR_PROFILE_PICTURE_URL_HERE" alt="Profile" />
+      {includeProfilePicture && profilePictureUrl && (
+        <div className="profile-picture-overlay">
+          <img src={profilePictureUrl} alt="Profile" className="profile-picture" />
         </div>
       )}
     </div>

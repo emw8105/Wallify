@@ -74,6 +74,25 @@ app.get('/callback', async (req, res) => {
   
 });
 
+// route for getting user profile picture
+app.get('/profile', async (req, res) => {
+  console.log('GET /profile');
+  const accessToken = req.headers.authorization.split(' ')[1];
+  
+  try {
+    const spotify = new SpotifyWebApi();
+    spotify.setAccessToken(accessToken);
+    
+    const profile = await spotify.getMe();
+    const profilePictureUrl = profile.body.images?.[0]?.url; // Assuming the first image is the profile picture
+    
+    res.json({ profilePictureUrl });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).send('Error fetching user profile');
+  }
+});
+
 // route for getting top artists
 app.get('/top-artists', async (req, res) => {
   console.log('GET /top-artists');
@@ -139,7 +158,6 @@ const getUserContent = async (token, offset, limit, content) => {
       },
       maxBodyLength: Infinity,
     });
-    console.log('REQUESTING');
     return response.data.items;
   } catch (error) {
     console.error('Error fetching user tracks:', error.response ? error.response.data : error.message);
