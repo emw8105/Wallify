@@ -16,6 +16,9 @@ const App = () => {
   const [gridSize, setGridSize] = useState({ x: 3, y: 3 });
   const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
   const [generateGrid, setGenerateGrid] = useState(false);
+  const [useGradient, setUseGradient] = useState(false);
+  const [color1, setColor1] = useState('#ffffff');
+  const [color2, setColor2] = useState('#000000');
   
   // fetch the tokens from the URL parameters and save them to the state
   useEffect(() => {
@@ -46,10 +49,13 @@ const App = () => {
   }, []);
 
   // gather the user's desired generation options and trigger the grid generation
-  const handleOptionsSubmit = (type, size, includePic) => {
+  const handleOptionsSubmit = (type, size, includePic, useGradient, color1, color2) => {
     setSelectionType(type);
     setGridSize(size);
     setIncludeProfilePicture(includePic);
+    setUseGradient(useGradient);
+    setColor1(color1);
+    setColor2(color2);
     setGenerateGrid(true);
   };
 
@@ -67,6 +73,9 @@ const App = () => {
               selectionType={selectionType}
               gridSize={gridSize}
               includeProfilePicture={includeProfilePicture}
+              useGradient={useGradient}
+              color1={color1}
+              color2={color2}
             />
           )}
         </>

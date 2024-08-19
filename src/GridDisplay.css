@@ -1,14 +1,16 @@
 .grid-container {
-    display: grid;
-    position: relative;
-    gap: 10px;
-    padding: 10px;
-    height: auto;
-    max-height: none;
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex-grow: 1;
-  }
+  display: grid;
+  position: relative;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 20px;
+  background-clip: padding-box;
+  height: auto;
+  max-height: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-grow: 1;
+}
   
   .grid-item {
     display: flex;
@@ -20,16 +22,14 @@
   }
 
   .profile-picture-overlay {
-    background-color: rgba(255, 0, 0, 0.3); /*Debugging*/
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
     overflow: hidden;
-    width: 200px;
-    height: 200px;
-    z-index: 10;
+    width: 175px;
+    height: 175px;
     pointer-events: none; /* avoid interration with grid items */
   }
   

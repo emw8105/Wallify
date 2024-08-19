@@ -1,33 +1,80 @@
 /* Options.css */
 .options-container {
-    padding: 20px;
-    background-color: #282828;
-    border-radius: 8px;
-    margin: 20px auto;
-    width: 300px;
-    color: white;
-  }
-  
-  .options-container form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .options-container form label {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .options-container button {
-    background-color: #1db954;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .options-container button:hover {
-    background-color: #1ed760;
-  }  
+  padding: 20px;
+  background-color: #282828;
+  border-radius: 8px;
+  margin: 20px auto;
+  width: 320px;
+  color: white;
+}
+
+.options-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.options-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.options-container form div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.options-container form label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.options-container form .grid-size-container {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Space between input boxes and 'x' */
+}
+
+.options-container form input[type="number"] {
+  width: 50px; /* Slightly wider for visibility */
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+  text-align: center;
+}
+
+.options-container form input[type="color"],
+.options-container form select {
+  flex: 1;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background-color: #333;
+  color: white;
+}
+
+.options-container form input[type="checkbox"] {
+  margin-left: 10px;
+}
+
+.options-container button {
+  background-color: #1db954;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  text-align: center;
+}
+
+.options-container button:hover {
+  background-color: #1ed760;
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import GridDisplay from './GridDisplay';
 
-const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePicture }) => {
+const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePicture, useGradient, color1, color2 }) => {
   const [content, setContent] = useState([]);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
@@ -58,6 +58,9 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
           gridSize={gridSize}
           includeProfilePicture={includeProfilePicture}
           profilePictureUrl={profilePictureUrl}
+          useGradient={useGradient}
+          color1={color1}
+          color2={color2}
         />
       )}
     </div>

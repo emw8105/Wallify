@@ -1,7 +1,7 @@
 import React from 'react';
 import './GridDisplay.css';
 
-const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureUrl }) => {
+const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureUrl, useGradient, color1, color2 }) => {
   // calculate the maximum number of images based on the grid size
   const maxArtists = gridSize.x * gridSize.y;
 
@@ -9,13 +9,17 @@ const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureU
   // NEED TO: handle the case where there are fewer artists than the grid size
   const contentToDisplay = content.slice(0, maxArtists);
 
+  const backgroundStyle = useGradient
+    ? { background: `linear-gradient(${color1}, ${color2})`,
+        gridTemplateColumns: `repeat(${gridSize.x}, 1fr)`,
+        gridTemplateRows: `repeat(${gridSize.y}, auto)`, }
+    : {gridTemplateColumns: `repeat(${gridSize.x}, 1fr)`,
+        gridTemplateRows: `repeat(${gridSize.y}, auto)`,};
+
   return (
     <div
       className="grid-container"
-      style={{
-        gridTemplateColumns: `repeat(${gridSize.x}, 1fr)`,
-        gridTemplateRows: `repeat(${gridSize.y}, auto)`,
-      }}
+      style={backgroundStyle}
     >
       {contentToDisplay.map((contentInstance, index) => {
         // image url is stored in different json fields depending on the type of content
