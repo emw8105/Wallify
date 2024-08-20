@@ -4,11 +4,19 @@ Spotiwall React is a web application built using React that displays content fro
 
 ## Table of Contents
 
+- [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Available Scripts](#available-scripts)
 - [Project Structure](#project-structure)
+- [Limitations](#limitations)
 - [Contributing](#contributing)
+
+## Features
+- **Spotify Data Access:** Users can securely log in with their Spotify account using OAuth. Users are redirected to Spotify's login page to grant permissions and once authenticated, the app retrieves an access token to fetch the user's listening history data
+- **Display Top Artists/Tracks:** The application fetches and displays your top artists or tracks from Spotify in a visually customizable grid layout. The number of artists/tracks displayed can be adjusted, and you can choose between top artists or top tracks based on your preference.
+- **Grid Customization:** Customize the grid layout with adjustable dimensions (X by Y). You can also select colors for the background, apply gradient effects, and even choose to display your Spotify profile picture in the middle of the grid.
+- **Download Feature:** After generating your custom grid, you can download the entire layout as an image using the built-in download button. This makes it easy to save and share your personalized Spotify content.
 
 ## Installation
 
@@ -61,6 +69,11 @@ In the project directory, you can run:
     - **Options.css**: Styles for the Options component.
     - **TopContent.js**: Component for displaying top content from Spotify. This component fetches and displays the user's top tracks, artists, or playlists, providing a personalized experience based on their listening habits.
     - **App.js**: The main React component that serves as the entry point of the application. This component sets up the main structure of the app, including routing and rendering the primary components. It acts as the central hub for the application's functionality.
-  
+
+## Limitations
+- **Item Display Limit:** Currently, the maximum number of items (artists/tracks) that can be displayed is 99. Requests exceeding this limit are automatically capped, as Spotify only makes the top 99 items available by request
+- **Spotify API Rate Limits:** Wallify adheres to the rate limits imposed by Spotify's API, which may impact the speed of content retrieval in cases of high usage. Currently, the project is in Development Mode pending a quota extension request, until then the rate limits are stricter
+- **Profile Picture Quality:** The resolution of the Spotify profile picture may vary based on the image provided by Spotify's API. The quality may not always meet expectations, depending on the original image.
+
 ## Contributing
 Contributions are very much welcome, feel free to add anything or even provide feedback, I would love any facet of collaboration on this.
