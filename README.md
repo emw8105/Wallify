@@ -25,8 +25,9 @@ Spotiwall React is a web application built using React that displays content fro
 
 3. Create a `.env` file in the root directory and add your Spotify API credentials:
     ```env
-    REACT_APP_SPOTIFY_CLIENT_ID=your_spotify_client_id
-    REACT_APP_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+    CLIENT_ID=your_spotify_client_id
+    CLIENT_SECRET=your_spotify_client_secret
+    REDIRECT_URI=your_callback_url
     ```
 
 ## Usage
