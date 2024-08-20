@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Spotiwall React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Spotiwall React is a web application built using React that displays content from Spotify in a visually appealing way. This project uses the Spotify Web API to fetch and display user content.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Available Scripts](#available-scripts)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+
+## Installation
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/your-username/spotiwall-react.git
+    cd Wallify
+    ```
+
+2. Install the dependencies:
+    ```sh
+    npm install
+    ```
+
+3. Create a `.env` file in the root directory and add your Spotify API credentials:
+    ```env
+    REACT_APP_SPOTIFY_CLIENT_ID=your_spotify_client_id
+    REACT_APP_SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+    ```
+
+## Usage
+
+1. Start the development server:
+    ```sh
+    npm start
+    ```
+
+2. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+- `npm start`: Runs the app in the development mode.
+- `npm run build`: Builds the app for production to the `build` folder.
+- `npm test`: Launches the test runner in the interactive watch mode.
+- `npm run eject`: Removes the single build dependency from your project.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Project Structure
+- **.env**: Environment variables file containing the Client ID, Client Secret, and Redirect URL for the server.
+- **README.md**: The main documentation file for the project.
+- **server.js**: Contains server-side code for handling API requests and serving the React app. This file typically sets up an Express server, defines API endpoints, and serves the static files generated by the React build process. It may also handle authentication and proxy requests to the Spotify API.
+- **src/**: Contains the source code for the React application, including:
+  - **components/**: Directory for React components, each with its own JavaScript and CSS files, the primary of which are:
+    - **GridDisplay.js**: Component for displaying content in a grid layout. This component uses the fetched data from the Spotify API and renders it in a grid format, making it easy to browse through albums, playlists, or tracks.
+    - **GridDisplay.css**: Styles for the GridDisplay component.
+    - **Login.js**: Component for handling user login. This component manages the authentication flow with Spotify, including redirecting users to the Spotify login page and handling the callback to obtain an access token.
+    - **Login.css**: Styles for the Login component.
+    - **Options.js**: Component for displaying user options. This component allows users to select different options or settings within the application, such as filtering content or changing display preferences.
+    - **Options.css**: Styles for the Options component.
+    - **TopContent.js**: Component for displaying top content from Spotify. This component fetches and displays the user's top tracks, artists, or playlists, providing a personalized experience based on their listening habits.
+    - **App.js**: The main React component that serves as the entry point of the application. This component sets up the main structure of the app, including routing and rendering the primary components. It acts as the central hub for the application's functionality.
+  
+## Contributing
+Contributions are very much welcome, feel free to add anything or even provide feedback, I would love any facet of collaboration on this.
