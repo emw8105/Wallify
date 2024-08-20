@@ -29,6 +29,12 @@ const Options = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (gridSize.x <= 0 || gridSize.y <= 0) {
+      alert('Please enter valid grid dimensions.');
+      return;
+    }
+
     const totalItems = gridSize.x * gridSize.y;
     if (totalItems > 99) {
         alert('The maximum number of artists/tracks you can request is 99. Please adjust your grid size.');
