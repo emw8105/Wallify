@@ -14,15 +14,16 @@ const Options = ({ onSubmit }) => {
   const handleDownload = () => {
     const gridElement = document.querySelector('.grid-container');
   html2canvas(gridElement, {
-    allowTaint: true, // Allow cross-origin images
-    useCORS: true, // Enable cross-origin resource sharing
-    scrollX: 0, // Prevent capturing the scroll position
-    scrollY: 0, // Prevent capturing the scroll position
-    backgroundColor: null, // Avoid adding a default background color
+    allowTaint: true,
+    useCORS: true,
+    scrollX: 0,
+    scrollY: 0,
+    backgroundColor: null,
+    scale: 2,
   }).then((canvas) => {
     const link = document.createElement('a');
-    link.download = 'spotiwall-grid.png';
-    link.href = canvas.toDataURL();
+    link.download = 'wallify-grid.png';
+    link.href = canvas.toDataURL('image/png', 1.0);
     link.click();
   });
   };
