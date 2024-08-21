@@ -1,4 +1,4 @@
-# Spotiwall React
+# Wallify
 
 Spotiwall React is a web application built using React that displays content from Spotify in a visually appealing way. This project uses the Spotify Web API to fetch and display user content.
 
@@ -14,15 +14,28 @@ Spotiwall React is a web application built using React that displays content fro
 
 ## Features
 - **Spotify Data Access:** Users can securely log in with their Spotify account using OAuth. Users are redirected to Spotify's login page to grant permissions and once authenticated, the app retrieves an access token to fetch the user's listening history data
-- **Display Top Artists/Tracks:** The application fetches and displays your top artists or tracks from Spotify in a visually customizable grid layout. The number of artists/tracks displayed can be adjusted, and you can choose between top artists or top tracks based on your preference.
+  
+  <img src="assets/wallify-login.png" alt="Login Screen" width="800"/>
+
 - **Grid Customization:** Customize the grid layout with adjustable dimensions (X by Y). You can also select colors for the background, apply gradient effects, and even choose to display your Spotify profile picture in the middle of the grid.
+
+  <img src="assets/wallify-options-menu.png" alt="Options Menu" width="800"/>
+
+- **Display Top Artists/Tracks:** The application fetches and displays your top artists or tracks from Spotify in a visually customizable grid layout. The number of artists/tracks displayed can be adjusted, and you can choose between top artists or top tracks based on your preference.
+
+  <img src="assets/wallify-result-grid.png" alt="Generated Grid" width="800"/>
+
 - **Download Feature:** After generating your custom grid, you can download the entire layout as an image using the built-in download button. This makes it easy to save and share your personalized Spotify content.
+
+  ![Example Grid 1](assets/wallify-grid-fav.png)
+  
+  ![Example Grid 2](assets/wallify-grid-andrew.png)
 
 ## Installation
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your-username/spotiwall-react.git
+    git clone https://github.com/emw8105/Wallify.git
     cd Wallify
     ```
 
@@ -40,12 +53,17 @@ Spotiwall React is a web application built using React that displays content fro
 
 ## Usage
 
-1. Start the development server:
+1. Start the Spotify app express server:
+   ```sh
+    node server.js
+    ```
+
+2. Start the development server simultaneously (in a different terminal):
     ```sh
     npm start
     ```
 
-2. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+3. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Available Scripts
 
