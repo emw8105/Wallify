@@ -11,6 +11,9 @@
   overflow-x: hidden;
   flex-grow: 1;
   margin-bottom: 50px;
+  grid-auto-flow: dense;
+  width: max-content;
+  min-width: 0;
 }
 
 .grid-item {
