@@ -50,8 +50,8 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
   }, [accessToken, selectionType, gridSize, includeProfilePicture]);
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1 style={{marginBottom: '20px'}}>Your Top {selectionType.charAt(0).toUpperCase() + selectionType.slice(1)}</h1>
+    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', minWidth: 0 }}>
+      <h1 style={{ marginBottom: '20px' }}>Your Top {selectionType.charAt(0).toUpperCase() + selectionType.slice(1)}</h1>
       {content.length > 0 && (
         <GridDisplay
           content={content}

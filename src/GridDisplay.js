@@ -32,22 +32,24 @@ const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureU
   const defaultImageUrl = 'default-not-found-image.png';
 
   return (
-    <div className="grid-container" style={backgroundStyle}>
-      {contentToDisplay.map((contentInstance, index) => {
-        // check if the contentInstance has images and fall back to the default image if necessary
-        const imageUrl = contentInstance?.images?.[0]?.url || contentInstance?.album?.images?.[0]?.url || defaultImageUrl;
+    <div className="grid-wrapper">
+      <div className="grid-container" style={backgroundStyle}>
+        {contentToDisplay.map((contentInstance, index) => {
+          // check if the contentInstance has images and fall back to the default image if necessary
+          const imageUrl = contentInstance?.images?.[0]?.url || contentInstance?.album?.images?.[0]?.url || defaultImageUrl;
 
-        return (
-          <div key={index} className="grid-item">
-            <img src={imageUrl} alt="Grid content" />
+          return (
+            <div key={index} className="grid-item">
+              <img src={imageUrl} alt="Grid content" />
+            </div>
+          );
+        })}
+        {includeProfilePicture && profilePictureUrl && (
+          <div className="profile-picture-overlay" style={profilePictureContainerStyle}>
+            <img src={profilePictureUrl} alt="Profile" style={profilePictureStyle} />
           </div>
-        );
-      })}
-      {includeProfilePicture && profilePictureUrl && (
-        <div className="profile-picture-overlay" style={profilePictureContainerStyle}>
-          <img src={profilePictureUrl} alt="Profile" style={profilePictureStyle} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
