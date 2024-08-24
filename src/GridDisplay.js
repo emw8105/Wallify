@@ -41,6 +41,9 @@ const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureU
           return (
             <div key={index} className="grid-item">
               <img src={imageUrl} alt="Grid content" />
+              <div className="grid-item-overlay">
+                <span className="grid-item-name">{contentInstance.name}</span>
+              </div>
             </div>
           );
         })}
