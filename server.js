@@ -65,7 +65,7 @@ app.get('/callback', async (req, res) => {
     console.log('refresh_token:', refresh_token);
     console.log(`Successfully retrieved access token. Expires in ${expires_in} s.`);
 
-    // Redirect to React app with tokens as query parameters
+    // redirect to React app with tokens as query parameters
     res.redirect(`http://localhost:3000?access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`);
   } catch (error) {
     console.error('Error getting Tokens:', error.response ? error.response.data : error.message);
@@ -84,7 +84,7 @@ app.get('/profile', async (req, res) => {
     spotify.setAccessToken(accessToken);
     
     const profile = await spotify.getMe();
-    const profilePictureUrl = profile.body.images?.[0]?.url; // Assuming the first image is the profile picture
+    const profilePictureUrl = profile.body.images?.[1]?.url; // get the second image, which is 300x300
     
     res.json({ profilePictureUrl });
   } catch (error) {
@@ -97,7 +97,7 @@ app.get('/profile', async (req, res) => {
 app.get('/top-artists', async (req, res) => {
   console.log('GET /top-artists');
   const accessToken = req.headers.authorization.split(' ')[1];
-  const { limit } = req.query; // Get the limit from the query params
+  const { limit } = req.query; // get the requested limit from the query params
 
   try {
     const topData = await getTopContent(accessToken, "artists", parseInt(limit, 10));
@@ -112,7 +112,7 @@ app.get('/top-artists', async (req, res) => {
 app.get('/top-tracks', async (req, res) => {
   console.log('GET /top-tracks');
   const accessToken = req.headers.authorization.split(' ')[1];
-  const { limit } = req.query; // Get the limit from the query params
+  const { limit } = req.query; // get the requested limit from the query params
 
   try {
     const topData = await getTopContent(accessToken, "tracks", parseInt(limit, 10));
@@ -127,7 +127,7 @@ app.get('/top-tracks', async (req, res) => {
 
 // used to manage the api requests to get the top artists or tracks
 const getTopContent = async (token, content, totalContent) => {
-  const limit = 50;  // Spotify's API limit per request
+  const limit = 50;  // spotify's API limit per request, can't get more than 50 items at a time
   const requests = [];
 
   for (let offset = 0; offset < totalContent; offset += limit) {
@@ -137,11 +137,11 @@ const getTopContent = async (token, content, totalContent) => {
 
   try {
     const results = await Promise.all(requests);
-    const topContent = results.flat(); // Flatten the array of arrays into a single array
-    return topContent.slice(0, totalContent); // Return only the exact number of items requested
+    const topContent = results.flat(); // flatten the array of arrays into a single array
+    return topContent.slice(0, totalContent); // return only the exact number of items requested
   } catch (error) {
     console.error(`Error fetching top ${content}:`, error);
-    throw error; // Rethrow the error if needed
+    throw error;
   }
 };
 
@@ -161,7 +161,7 @@ const getUserContent = async (token, offset, limit, content) => {
     return response.data.items;
   } catch (error) {
     console.error('Error fetching user tracks:', error.response ? error.response.data : error.message);
-    throw error; // Rethrow the error to handle it in the calling function
+    throw error;
   }
 };
 

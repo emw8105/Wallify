@@ -3,43 +3,43 @@ import axios from 'axios';
 import GridDisplay from './GridDisplay';
 
 const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePicture, useGradient, color1, color2 }) => {
-  const [artistsCache, setArtistsCache] = useState([]); // Cache for all artists
-  const [tracksCache, setTracksCache] = useState([]);  // Cache for all tracks
+  const [artistsCache, setArtistsCache] = useState([]);
+  const [tracksCache, setTracksCache] = useState([]);
   const [content, setContent] = useState([]);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   useEffect(() => {
     const fetchTopContent = async () => {
       try {
-        // Check cache based on selection type
+        // check if there is existing cached data for the selected type
         if (selectionType === 'artists' && artistsCache.length === 99) {
           console.log('Using cached artists data');
-          setContent(artistsCache.slice(0, gridSize.x * gridSize.y));
+          setContent(artistsCache.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
         } else if (selectionType === 'tracks' && tracksCache.length === 99) {
           console.log('Using cached tracks data');
-          setContent(tracksCache.slice(0, gridSize.x * gridSize.y));
+          setContent(tracksCache.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
         } else {
-          // Fetch data if not already cached
+          // fetch data if not already cached
           const contentType = selectionType === 'artists' ? 'top-artists' : 'top-tracks';
-          const totalItems = 99; // Fetch all 99 items initially
+          const totalItems = 99; // request the maximum number of items to cache for future use
           const response = await axios.get(`http://localhost:8888/${contentType}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
             params: {
-              limit: totalItems, // Always fetch 99 items
+              limit: totalItems,
             },
           });
 
           console.log(`Successfully fetched top ${selectionType}:`, response.data);
 
-          // Cache the data for future requests
+          // cache the response content for future use to avoid subsequent API calls
           if (selectionType === 'artists') {
             setArtistsCache(response.data);
-            setContent(response.data.slice(0, gridSize.x * gridSize.y)); // Slice based on grid size
+            setContent(response.data.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
           } else if (selectionType === 'tracks') {
             setTracksCache(response.data);
-            setContent(response.data.slice(0, gridSize.x * gridSize.y)); // Slice based on grid size
+            setContent(response.data.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
           }
         }
       } catch (error) {
