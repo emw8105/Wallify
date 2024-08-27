@@ -2,26 +2,25 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import GridDisplay from './GridDisplay';
 
-const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePicture, useGradient, color1, color2 }) => {
+const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2  }) => {
   const [artistsCache, setArtistsCache] = useState([]);
   const [tracksCache, setTracksCache] = useState([]);
   const [content, setContent] = useState([]);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   useEffect(() => {
-    const fetchTopContent = async () => {
+    const getTopContent = async () => {
       try {
-        // check if there is existing cached data for the selected type
-        if (selectionType === 'artists' && artistsCache.length === 99) {
-          console.log('Using cached artists data');
-          setContent(artistsCache.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
-        } else if (selectionType === 'tracks' && tracksCache.length === 99) {
-          console.log('Using cached tracks data');
-          setContent(tracksCache.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
-        } else {
-          // fetch data if not already cached
-          const contentType = selectionType === 'artists' ? 'top-artists' : 'top-tracks';
-          const totalItems = 99; // request the maximum number of items to cache for future use
+        const totalItems = 99; // maximum items to request stored by the Spotify API
+    
+        // determine the content type and check if the cache exists
+        const contentType = selectionType === 'artists' ? 'top-artists' : 'top-tracks';
+        let cachedData = selectionType === 'artists' ? artistsCache : tracksCache;
+    
+        // if the cache has the full set of data already, use it, otherwise fetch the data
+        let content = cachedData.length === totalItems ? cachedData : null;
+  
+        if (!content) {
           const response = await axios.get(`http://localhost:8888/${contentType}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -30,23 +29,51 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
               limit: totalItems,
             },
           });
-
+    
           console.log(`Successfully fetched top ${selectionType}:`, response.data);
-
-          // cache the response content for future use to avoid subsequent API calls
+    
+          content = response.data;
+    
+          // cache the newly fetched content for subsequent requests
           if (selectionType === 'artists') {
-            setArtistsCache(response.data);
-            setContent(response.data.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
+            setArtistsCache(content);
           } else if (selectionType === 'tracks') {
-            setTracksCache(response.data);
-            setContent(response.data.slice(0, gridSize.x * gridSize.y)); // slice just the necessary amount
+            setTracksCache(content);
           }
+        } else {
+          console.log(`Using cached ${selectionType} data`);
         }
+    
+        // if the user wants to exclude null images, filter the content
+        if (excludeNullImages) {
+          console.log('Excluding null images');
+          content = content.filter(item => {
+            // Check for artists (item.images) and tracks (item.album.images)
+            const images = selectionType === 'artists' ? item.images : item.album.images;
+            if (images && images.length > 0 && images[0].url) {
+              return true;  // Keep items with valid images
+            } else {
+              console.log('Filtered out item due to missing image:', item);
+              return false;  // Filter out items without valid images
+            }
+          });
+        }
+    
+        // calculate how many items are needed for the grid and check if the content is sufficient for the desired grid size
+        const totalGridItems = gridSize.x * gridSize.y;
+        if (content.length < totalGridItems) {
+          alert(`Only ${content.length} ${selectionType} available due to missing images. Please reduce the grid size.`);
+        }
+    
+        // set the content to the filtered slice
+        setContent(content.slice(0, totalGridItems));
       } catch (error) {
         console.error(`Error fetching top ${selectionType}:`, error.message);
       }
     };
-
+    
+  
+    // fetch profile picture if the option is enabled
     const fetchProfilePicture = async () => {
       try {
         const response = await axios.get('http://localhost:8888/profile', {
@@ -59,14 +86,16 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
         console.error('Error fetching profile picture:', error.message);
       }
     };
-
-    // Only get the profile picture if the user chooses to include it
+  
+    // only gets fetched when the user selects the option
     if (includeProfilePicture) {
       fetchProfilePicture();
     }
-
-    fetchTopContent();
-  }, [accessToken, selectionType, gridSize, includeProfilePicture, artistsCache, tracksCache]);
+  
+    // get the top content, content gets fetched regardless on every generation
+    getTopContent();
+  }, [accessToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, artistsCache, tracksCache]);
+  
 
   return (
     <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', minWidth: 0 }}>

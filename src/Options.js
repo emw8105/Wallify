@@ -9,23 +9,24 @@ const Options = ({ onSubmit }) => {
   const [useGradient, setUseGradient] = useState(false);
   const [color1, setColor1] = useState('#ffffff');
   const [color2, setColor2] = useState('#000000');
+  const [excludeNullImages, setExcludeNullImages] = useState(false);
   const [isGridGenerated, setIsGridGenerated] = useState(false);
 
   const handleDownload = () => {
     const gridElement = document.querySelector('.grid-container');
-  html2canvas(gridElement, {
-    allowTaint: true,
-    useCORS: true,
-    scrollX: 0,
-    scrollY: 0,
-    backgroundColor: null,
-    scale: 2,
-  }).then((canvas) => {
-    const link = document.createElement('a');
-    link.download = 'wallify-grid.png';
-    link.href = canvas.toDataURL('image/png', 1.0);
-    link.click();
-  });
+    html2canvas(gridElement, {
+      allowTaint: true,
+      useCORS: true,
+      scrollX: 0,
+      scrollY: 0,
+      backgroundColor: null,
+      scale: 2,
+    }).then((canvas) => {
+      const link = document.createElement('a');
+      link.download = 'wallify-grid.png';
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    });
   };
 
   const handleSubmit = (e) => {
@@ -38,11 +39,12 @@ const Options = ({ onSubmit }) => {
 
     const totalItems = gridSize.x * gridSize.y;
     if (totalItems > 99) {
-        alert('The maximum number of artists/tracks you can request is 99. Please adjust your grid size.');
-        return;
+      alert('The maximum number of artists/tracks you can request is 99. Please adjust your grid size.');
+      return;
     }
+
     setIsGridGenerated(true);
-    onSubmit(selectionType, gridSize, includeProfilePicture, useGradient, color1, color2);
+    onSubmit(selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2);
   };
 
   return (
@@ -84,6 +86,16 @@ const Options = ({ onSubmit }) => {
               onChange={() => setIncludeProfilePicture(!includeProfilePicture)}
             />
             Include Profile Picture
+          </label>
+        </div>
+        <div className="inline-label">
+          <label>
+            <input
+              type="checkbox"
+              checked={excludeNullImages}
+              onChange={() => setExcludeNullImages(!excludeNullImages)}
+            />
+            Exclude Imageless Content
           </label>
         </div>
         <div className="inline-label">
