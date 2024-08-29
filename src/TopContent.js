@@ -48,13 +48,13 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
         if (excludeNullImages) {
           console.log('Excluding null images');
           content = content.filter(item => {
-            // Check for artists (item.images) and tracks (item.album.images)
+            // check for artists (item.images) and tracks (item.album.images)
             const images = selectionType === 'artists' ? item.images : item.album.images;
             if (images && images.length > 0 && images[0].url) {
-              return true;  // Keep items with valid images
+              return true;  // keep items with valid images
             } else {
               console.log('Filtered out item due to missing image:', item);
-              return false;  // Filter out items without valid images
+              return false;  // filter out items without valid images
             }
           });
         }
