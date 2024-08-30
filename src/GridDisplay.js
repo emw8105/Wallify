@@ -1,5 +1,6 @@
 import React from 'react';
 import './GridDisplay.css';
+import GridItem from './GridItem';
 
 const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureUrl, useGradient, color1, color2 }) => {
   // calculate the maximum number of images based on the grid size
@@ -31,22 +32,13 @@ const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureU
 
   const defaultImageUrl = 'default-not-found-image.png';
 
+  // render a grid of GridItem components with the content instances from the response JSON
   return (
     <div className="grid-wrapper">
       <div className="grid-container" style={backgroundStyle}>
-        {contentToDisplay.map((contentInstance, index) => {
-          // check if the contentInstance has images and fall back to the default image if necessary
-          const imageUrl = contentInstance?.images?.[0]?.url || contentInstance?.album?.images?.[0]?.url || defaultImageUrl;
-
-          return (
-            <div key={index} className="grid-item">
-              <img src={imageUrl} alt="Grid content" />
-              <div className="grid-item-overlay">
-                <span className="grid-item-name">{contentInstance.name}</span>
-              </div>
-            </div>
-          );
-        })}
+        {contentToDisplay.map((contentInstance, index) => (
+          <GridItem key={index} contentInstance={contentInstance} defaultImageUrl={defaultImageUrl} />
+        ))}
         {includeProfilePicture && profilePictureUrl && (
           <div className="profile-picture-overlay" style={profilePictureContainerStyle}>
             <img src={profilePictureUrl} alt="Profile" style={profilePictureStyle} />
