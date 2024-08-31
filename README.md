@@ -1,6 +1,6 @@
 # Wallify
 
-Spotiwall React is a web application built using React that displays content from Spotify in a visually appealing way. This project uses the Spotify Web API to fetch and display user content.
+Wallify is a web application built using React that displays content from Spotify in a visually appealing way. This project uses the Spotify Web API to fetch and display user content.
 
 *Note: The underlying Spotify app used to handle the Spotify data retrieval is currently in Development Mode. This limits the number of users to 25, each which must be entered into the developer console to be authorized. To make this app work for anyone else, a new Spotify app must be created [here](https://developer.spotify.com/dashboard). I plan to submit an extension request to provide easier access to the wallpapers for a wider audience, but approval may take up to 6 weeks.*
 
