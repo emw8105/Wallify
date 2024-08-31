@@ -128,10 +128,10 @@ const Options = ({ onSubmit }) => {
             </label>
           </>
         )}
-        <button type="submit">Generate</button>
+        <button type="submit" className="generate">Generate</button>
       </form>
       {isGridGenerated && (
-        <button onClick={handleDownload}>Download</button>
+        <button onClick={handleDownload} className="download">Download</button>
       )}
     </div>
   );

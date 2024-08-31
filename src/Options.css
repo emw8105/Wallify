@@ -36,11 +36,11 @@
 .options-container form .grid-size-container {
   display: flex;
   align-items: center;
-  gap: 5px; /* Space between input boxes and 'x' */
+  gap: 5px;
 }
 
 .options-container form input[type="number"] {
-  width: 50px; /* Slightly wider for visibility */
+  width: 50px;
   padding: 5px;
   border-radius: 5px;
   border: 1px solid #555;
@@ -63,7 +63,7 @@
   margin-left: 10px;
 }
 
-.options-container button {
+.options-container button.generate {
   background-color: #1db954;
   color: white;
   border: none;
@@ -76,6 +76,23 @@
   margin-top: 20px;
 }
 
-.options-container button:hover {
+.options-container button.generate:hover {
   background-color: #1ed760;
+}
+
+.options-container button.download {
+  background-color: #0073e6;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.options-container button.download:hover {
+  background-color: #3399ff;
 }
