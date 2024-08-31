@@ -79,53 +79,62 @@ const Options = ({ onSubmit }) => {
           </label>
         </div>
         <div className="inline-label">
-          <label>
+          <div className="checkbox-container">
             <input
               type="checkbox"
               checked={includeProfilePicture}
               onChange={() => setIncludeProfilePicture(!includeProfilePicture)}
+              id="includeProfilePicture"
             />
-            Include Profile Picture
-          </label>
+            <label className="non-clickable" htmlFor="includeProfilePicture">
+              Include Profile Picture
+            </label>
+          </div>
         </div>
         <div className="inline-label">
-          <label>
+          <div className="checkbox-container">
             <input
               type="checkbox"
               checked={excludeNullImages}
               onChange={() => setExcludeNullImages(!excludeNullImages)}
+              id="excludeNullImages"
             />
-            Exclude Imageless Content
-          </label>
+            <label className="non-clickable" htmlFor="excludeNullImages">
+              Exclude Imageless Content
+            </label>
+          </div>
         </div>
         <div className="inline-label">
-          <label>
+          <div className="checkbox-container">
             <input
               type="checkbox"
               checked={useGradient}
               onChange={() => setUseGradient(!useGradient)}
+              id="useGradient"
             />
-            Use Gradient Background
-          </label>
+            <label className="non-clickable" htmlFor="useGradient">
+              Use Gradient Background
+            </label>
+          </div>
         </div>
         {useGradient && (
           <>
-            <label>
-              Color 1:
+            <div className="color-picker-container">
+              <span className="color-label">Color 1:</span>
               <input
                 type="color"
                 value={color1}
                 onChange={(e) => setColor1(e.target.value)}
               />
-            </label>
-            <label>
-              Color 2:
+            </div>
+            <div className="color-picker-container">
+              <span className="color-label">Color 2:</span>
               <input
                 type="color"
                 value={color2}
                 onChange={(e) => setColor2(e.target.value)}
               />
-            </label>
+            </div>
           </>
         )}
         <button type="submit" className="generate">Generate</button>
