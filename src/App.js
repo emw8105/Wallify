@@ -73,6 +73,7 @@ const App = () => {
           {generateGrid && (
             <TopContent
               accessToken={accessToken}
+              refreshToken={refreshToken}
               selectionType={selectionType}
               gridSize={gridSize}
               includeProfilePicture={includeProfilePicture}

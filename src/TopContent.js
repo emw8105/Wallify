@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import GridDisplay from './GridDisplay';
 
-const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2  }) => {
+const TopContent = ({ accessToken, refreshToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2  }) => {
   const [artistsCache, setArtistsCache] = useState([]);
   const [tracksCache, setTracksCache] = useState([]);
   const [content, setContent] = useState([]);
@@ -24,6 +24,7 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
           const response = await axios.get(`http://localhost:8888/${contentType}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
+              'x-refresh-token': refreshToken,
             },
             params: {
               limit: totalItems,
@@ -79,7 +80,11 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
         const response = await axios.get('http://localhost:8888/profile', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            'x-refresh-token': refreshToken,
           },
+          params: {
+            refreshToken: refreshToken,
+          }
         });
         setProfilePictureUrl(response.data.profilePictureUrl);
       } catch (error) {
@@ -94,7 +99,7 @@ const TopContent = ({ accessToken, selectionType, gridSize, includeProfilePictur
   
     // get the top content, content gets fetched regardless on every generation
     getTopContent();
-  }, [accessToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, artistsCache, tracksCache]);
+  }, [accessToken, refreshToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, artistsCache, tracksCache]);
   
 
   return (

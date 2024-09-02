@@ -74,6 +74,23 @@ app.get('/callback', async (req, res) => {
   
 });
 
+// route to get a new access token using the refresh token
+const refreshSpotifyToken = async (refreshToken) => {
+  console.log('Attempting to refresh access token for refresh token:', refreshToken);
+
+  spotify.setRefreshToken(refreshToken);
+
+  try {
+    const data = await spotify.refreshAccessToken();
+    console.log('Access token refreshed successfully:', data.body.access_token);
+    
+    return data.body.access_token; 
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+    throw error;
+  }
+};
+
 // route for getting user profile picture
 app.get('/profile', async (req, res) => {
   console.log('GET /profile');
@@ -97,11 +114,11 @@ app.get('/profile', async (req, res) => {
 app.get('/top-artists', async (req, res) => {
   console.log('GET /top-artists');
   const accessToken = req.headers.authorization.split(' ')[1];
-  const { limit } = req.query; // get the requested limit from the query params
+  const { limit } = req.query;
 
   try {
-    const topData = await getTopContent(accessToken, "artists", parseInt(limit, 10));
-    res.json(topData); 
+    const topData = await makeSpotifyRequest(req, accessToken, 'artists', parseInt(limit, 10));
+    res.json(topData);
   } catch (error) {
     console.error('Error fetching top artists:', error);
     res.status(500).send('Error fetching top artists');
@@ -112,10 +129,10 @@ app.get('/top-artists', async (req, res) => {
 app.get('/top-tracks', async (req, res) => {
   console.log('GET /top-tracks');
   const accessToken = req.headers.authorization.split(' ')[1];
-  const { limit } = req.query; // get the requested limit from the query params
+  const { limit } = req.query;
 
   try {
-    const topData = await getTopContent(accessToken, "tracks", parseInt(limit, 10));
+    const topData = await makeSpotifyRequest(req, accessToken, 'tracks', parseInt(limit, 10));
     res.json(topData);
   } catch (error) {
     console.error('Error fetching top tracks:', error);
@@ -142,6 +159,32 @@ const getTopContent = async (token, content, totalContent) => {
   } catch (error) {
     console.error(`Error fetching top ${content}:`, error);
     throw error;
+  }
+};
+
+// used to manage the api requests to get the top artists or tracks and handles token refresh/erroring
+const makeSpotifyRequest = async (req, accessToken, content, limit, retry = 0) => {
+  try {
+    console.log(`Making Spotify request for top ${content} with access token:`, accessToken);
+    return await getTopContent(accessToken, content, limit);
+  } catch (error) {
+    if (error.response && error.response.status === 401 && retry < 1) {
+      console.error('Access token expired, refreshing token...');
+      const refreshToken = req.headers['x-refresh-token']; // assume refresh token is passed from client
+      if (refreshToken) {
+        try {
+          const newAccessToken = await refreshSpotifyToken(refreshToken);
+          return await makeSpotifyRequest(req, newAccessToken, content, limit, retry + 1); // retry with new token
+        } catch (tokenError) {
+          console.error('Error retrying with refreshed token:', tokenError);
+          throw tokenError;
+        }
+      } else {
+        throw new Error('Refresh token not provided');
+      }
+    } else {
+      throw error; // rethrow if error is not 401 or retries are exhausted
+    }
   }
 };
 
