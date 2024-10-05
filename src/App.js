@@ -61,6 +61,13 @@ const App = () => {
     setGenerateGrid(true);
   };
 
+  const handleAccessTokenUpdate = (newToken) => {
+    if (newToken) {
+      setAccessToken(newToken);
+      console.log('Updated access token in App state to:', newToken);
+    }
+  };
+
   // if the user is not logged in, display the login component, otherwise display the options and the subsequent results after submission
   return (
     <div className={isLoggedIn ? 'app-container' : 'login-container'}>
@@ -81,6 +88,7 @@ const App = () => {
               useGradient={useGradient}
               color1={color1}
               color2={color2}
+              onAccessTokenUpdate={handleAccessTokenUpdate}  // Pass token update handler
             />
           )}
         </>

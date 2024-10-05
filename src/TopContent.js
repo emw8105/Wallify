@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import axios from 'axios';
 import GridDisplay from './GridDisplay';
 
-const TopContent = ({ accessToken, refreshToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2  }) => {
+const TopContent = ({ accessToken, refreshToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2, onAccessTokenUpdate }) => {
   const [artistsCache, setArtistsCache] = useState([]);
   const [tracksCache, setTracksCache] = useState([]);
   const [content, setContent] = useState([]);
@@ -33,7 +33,13 @@ const TopContent = ({ accessToken, refreshToken, selectionType, gridSize, includ
     
           console.log(`Successfully fetched top ${selectionType}:`, response.data);
     
-          content = response.data;
+          content = response.data.data;
+
+          // update the access token if the response includes a refreshed one
+          if (response.data.accessToken) {
+            onAccessTokenUpdate(response.data.accessToken);
+            console.log('Access token refreshed');
+          }
     
           // cache the newly fetched content for subsequent requests
           if (selectionType === 'artists') {
@@ -81,12 +87,16 @@ const TopContent = ({ accessToken, refreshToken, selectionType, gridSize, includ
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'x-refresh-token': refreshToken,
-          },
-          params: {
-            refreshToken: refreshToken,
           }
         });
+    
         setProfilePictureUrl(response.data.profilePictureUrl);
+    
+        // update access token if refreshed
+        if (response.data.accessToken) {
+          onAccessTokenUpdate(response.data.accessToken);
+          console.log('Access token refreshed for profile picture');
+        }
       } catch (error) {
         console.error('Error fetching profile picture:', error.message);
       }
@@ -99,7 +109,7 @@ const TopContent = ({ accessToken, refreshToken, selectionType, gridSize, includ
   
     // get the top content, content gets fetched regardless on every generation
     getTopContent();
-  }, [accessToken, refreshToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, artistsCache, tracksCache]);
+  }, [accessToken, refreshToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, artistsCache, tracksCache, onAccessTokenUpdate]);
   
 
   return (

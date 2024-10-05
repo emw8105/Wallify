@@ -105,8 +105,32 @@ app.get('/profile', async (req, res) => {
     
     res.json({ profilePictureUrl });
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).send('Error fetching user profile');
+    if (error.statusCode === 401) {
+      // token expired, handle refresh
+      const refreshToken = req.headers['x-refresh-token'];
+      console.log('Access token expired, attempting to refresh');
+
+      try {
+        const data = await spotify.refreshAccessToken(refreshToken); // description of method claims to return a promise but actual implementation does not, still going to put an await JIC
+        const newAccessToken = data.body.access_token;
+        console.log('Access token refreshed successfully:', newAccessToken);
+        spotify.setAccessToken(newAccessToken);
+
+        const profile = await spotify.getMe();
+        const profilePictureUrl = profile.body.images?.[1]?.url;
+
+        res.json({
+          profilePictureUrl,
+          accessToken: newAccessToken
+        });
+      } catch (refreshError) {
+        console.error('Error refreshing access token:', refreshError);
+        res.status(500).send('Error refreshing access token');
+      }
+    } else {
+      console.error('Error fetching user profile:', error);
+      res.status(500).send('Error fetching user profile');
+    }
   }
 });
 
@@ -116,9 +140,16 @@ app.get('/top-artists', async (req, res) => {
   const accessToken = req.headers.authorization.split(' ')[1];
   const { limit } = req.query;
 
+  let newAccessToken = accessToken;
+
   try {
-    const topData = await makeSpotifyRequest(req, accessToken, 'artists', parseInt(limit, 10));
-    res.json(topData);
+    const topData = await makeSpotifyRequest(req, newAccessToken, 'artists', parseInt(limit, 10));
+
+    // send the refreshed access token back if it was refreshed during the request, only return if it was refreshed
+    res.json({
+      data: topData,
+      accessToken: newAccessToken !== accessToken ? newAccessToken : null,
+    });
   } catch (error) {
     console.error('Error fetching top artists:', error);
     res.status(500).send('Error fetching top artists');
@@ -130,10 +161,17 @@ app.get('/top-tracks', async (req, res) => {
   console.log('GET /top-tracks');
   const accessToken = req.headers.authorization.split(' ')[1];
   const { limit } = req.query;
+  
+  let newAccessToken = accessToken;
 
   try {
-    const topData = await makeSpotifyRequest(req, accessToken, 'tracks', parseInt(limit, 10));
-    res.json(topData);
+    const topData = await makeSpotifyRequest(req, newAccessToken, 'tracks', parseInt(limit, 10));
+
+    // send the refreshed access token back if it was refreshed during the request, only return if it was refreshed
+    res.json({
+      data: topData,
+      accessToken: newAccessToken !== accessToken ? newAccessToken : null,
+    });
   } catch (error) {
     console.error('Error fetching top tracks:', error);
     res.status(500).send('Error fetching top tracks');
