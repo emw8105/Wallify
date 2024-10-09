@@ -13,20 +13,22 @@ const Options = ({ onSubmit }) => {
   const [isGridGenerated, setIsGridGenerated] = useState(false);
 
   const handleDownload = () => {
-    const gridElement = document.querySelector('.grid-container');
-    html2canvas(gridElement, {
-      allowTaint: true,
-      useCORS: true,
-      scrollX: 0,
-      scrollY: 0,
-      backgroundColor: null,
-      scale: 2,
-    }).then((canvas) => {
-      const link = document.createElement('a');
-      link.download = 'wallify-grid.png';
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-    });
+    const gridElement = document.querySelector('.grid-container') as HTMLElement;
+    if (gridElement) {
+      html2canvas(gridElement, {
+        allowTaint: true,
+        useCORS: true,
+        scrollX: 0,
+        scrollY: 0,
+        backgroundColor: null,
+        scale: 2,
+      }).then((canvas) => {
+        const link = document.createElement('a');
+        link.download = 'wallify-grid.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+      });
+    }
   };
 
   const handleSubmit = (e) => {
@@ -67,13 +69,13 @@ const Options = ({ onSubmit }) => {
               <input
                 type="number"
                 value={gridSize.x}
-                onChange={(e) => setGridSize({ ...gridSize, x: e.target.value })}
+                onChange={(e) => setGridSize({ ...gridSize, x: Number(e.target.value) })}
               />
               <span>x</span>
               <input
                 type="number"
                 value={gridSize.y}
-                onChange={(e) => setGridSize({ ...gridSize, y: e.target.value })}
+                onChange={(e) => setGridSize({ ...gridSize, y: Number(e.target.value) })}
               />
             </div>
           </label>
