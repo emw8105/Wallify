@@ -2,15 +2,32 @@ import React, { useState } from 'react';
 import './Options.css';
 import html2canvas from 'html2canvas';
 
-const Options = ({ onSubmit }) => {
-  const [selectionType, setSelectionType] = useState('artists');
-  const [gridSize, setGridSize] = useState({ x: 3, y: 3 });
-  const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
-  const [useGradient, setUseGradient] = useState(false);
-  const [color1, setColor1] = useState('#ffffff');
-  const [color2, setColor2] = useState('#000000');
-  const [excludeNullImages, setExcludeNullImages] = useState(false);
-  const [isGridGenerated, setIsGridGenerated] = useState(false);
+interface GridSize {
+  x: number;
+  y: number;
+}
+
+interface OptionsProps {
+  onSubmit: (
+    selectionType: string,
+    gridSize: GridSize,
+    includeProfilePicture: boolean,
+    excludeNullImages: boolean,
+    useGradient: boolean,
+    color1: string,
+    color2: string
+  ) => void;
+}
+
+const Options: React.FC<OptionsProps> = ({ onSubmit }) => {
+  const [selectionType, setSelectionType] = useState<string>('artists');
+  const [gridSize, setGridSize] = useState<GridSize>({ x: 3, y: 3 });
+  const [includeProfilePicture, setIncludeProfilePicture] = useState<boolean>(false);
+  const [useGradient, setUseGradient] = useState<boolean>(false);
+  const [color1, setColor1] = useState<string>('#ffffff');
+  const [color2, setColor2] = useState<string>('#000000');
+  const [excludeNullImages, setExcludeNullImages] = useState<boolean>(false);
+  const [isGridGenerated, setIsGridGenerated] = useState<boolean>(false);
 
   const handleDownload = () => {
     const gridElement = document.querySelector('.grid-container') as HTMLElement;
@@ -31,7 +48,7 @@ const Options = ({ onSubmit }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (gridSize.x <= 0 || gridSize.y <= 0) {

@@ -2,7 +2,29 @@ import React from 'react';
 import './GridDisplay.css';
 import GridItem from './GridItem';
 
-const GridDisplay = ({ content, gridSize, includeProfilePicture, profilePictureUrl, useGradient, color1, color2 }) => {
+interface GridSize {
+  x: number;
+  y: number;
+}
+
+interface ContentInstance {
+  images?: { url: string }[];
+  album?: { images: { url: string }[] };
+  external_urls?: { spotify: string };
+  name: string;
+}
+
+interface GridDisplayProps {
+  content: ContentInstance[];
+  gridSize: GridSize;
+  includeProfilePicture: boolean;
+  profilePictureUrl: string | null;
+  useGradient: boolean;
+  color1: string;
+  color2: string;
+}
+
+const GridDisplay: React.FC<GridDisplayProps> = ({ content, gridSize, includeProfilePicture, profilePictureUrl, useGradient, color1, color2 }) => {
   // calculate the maximum number of images based on the grid size
   const maxArtists = gridSize.x * gridSize.y;
 

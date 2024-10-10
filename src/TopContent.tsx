@@ -2,7 +2,30 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import GridDisplay from "./GridDisplay";
 
-const TopContent = ({
+interface GridSize {
+  x: number;
+  y: number;
+}
+
+interface TopContentProps {
+  accessToken: string;
+  selectionType: string;
+  gridSize: GridSize;
+  includeProfilePicture: boolean;
+  excludeNullImages: boolean;
+  useGradient: boolean;
+  color1: string;
+  color2: string;
+}
+
+interface ContentInstance {
+  images?: { url: string }[];
+  album?: { images: { url: string }[] };
+  external_urls?: { spotify: string };
+  name: string;
+}
+
+const TopContent: React.FC<TopContentProps> = ({
   accessToken,
   selectionType,
   gridSize,
@@ -12,10 +35,10 @@ const TopContent = ({
   color1,
   color2,
 }) => {
-  const [artistsCache, setArtistsCache] = useState([]);
-  const [tracksCache, setTracksCache] = useState([]);
-  const [content, setContent] = useState([]);
-  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+  const [artistsCache, setArtistsCache] = useState<ContentInstance[]>([]);
+  const [tracksCache, setTracksCache] = useState<ContentInstance[]>([]);
+  const [content, setContent] = useState<ContentInstance[]>([]);
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const getTopContent = async () => {
