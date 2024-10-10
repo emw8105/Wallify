@@ -52,9 +52,9 @@ const TopContent: React.FC<TopContentProps> = ({
           selectionType === "artists" ? artistsCache : tracksCache;
 
         // if the cache has the full set of data already, use it, otherwise fetch the data
-        let content = cachedData.length === totalItems ? cachedData : null;
+        let content: ContentInstance[] = cachedData.length === totalItems ? cachedData : [];
 
-        if (!content) {
+        if (content.length === 0) {
           const response = await axios.get(
             `http://localhost:8888/${contentType}`,
             {
@@ -88,9 +88,9 @@ const TopContent: React.FC<TopContentProps> = ({
         if (excludeNullImages) {
           console.log("Excluding null images");
           content = content.filter((item) => {
-            // check for artists (item.images) and tracks (item.album.images)
+            // check for artists (item.images) and tracks (item.album?.images)
             const images =
-              selectionType === "artists" ? item.images : item.album.images;
+              selectionType === "artists" ? item.images : item.album?.images;
             if (images && images.length > 0 && images[0].url) {
               return true; // keep items with valid images
             } else {
@@ -111,7 +111,11 @@ const TopContent: React.FC<TopContentProps> = ({
         // set the content to the filtered slice
         setContent(content.slice(0, totalGridItems));
       } catch (error) {
-        console.error(`Error fetching top ${selectionType}:`, error.message);
+        if (error instanceof Error) {
+          console.error(`Error fetching top ${selectionType}:`, error.message);
+        } else {
+          console.error(`Error fetching top ${selectionType}:`, error);
+        }
       }
     };
 
@@ -125,7 +129,11 @@ const TopContent: React.FC<TopContentProps> = ({
         });
         setProfilePictureUrl(response.data.profilePictureUrl);
       } catch (error) {
-        console.error("Error fetching profile picture:", error.message);
+        if (error instanceof Error) {
+          console.error("Error fetching profile picture:", error.message);
+        } else {
+          console.error("Error fetching profile picture:", error);
+        }
       }
     };
 
