@@ -3,7 +3,12 @@ import Login from "./Login";
 import Options from "./Options";
 import TopContent from "./TopContent";
 
-const App = () => {
+interface GridSize {
+  x: number;
+  y: number;
+}
+
+const App: React.FC = () => {
   // login and tokens
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const tokensFetchedRef = useRef(false);
@@ -11,7 +16,7 @@ const App = () => {
 
   // options and results
   const [selectionType, setSelectionType] = useState("artists");
-  const [gridSize, setGridSize] = useState({ x: 3, y: 3 });
+  const [gridSize, setGridSize] = useState<GridSize>({ x: 3, y: 3 });
   const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
   const [generateGrid, setGenerateGrid] = useState(false);
   const [excludeNullImages, setExcludeNullImages] = useState(false);
@@ -46,13 +51,13 @@ const App = () => {
 
   // gather the user's desired generation options and trigger the grid generation
   const handleOptionsSubmit = (
-    type,
-    size,
-    includePic,
-    excludeNullImages,
-    useGradient,
-    color1,
-    color2
+    type: string,
+    size: GridSize,
+    includePic: boolean,
+    excludeNullImages: boolean,
+    useGradient: boolean,
+    color1: string,
+    color2: string
   ) => {
     setSelectionType(type);
     setGridSize(size);

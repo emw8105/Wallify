@@ -3,7 +3,30 @@ import axios from "axios";
 import GridDisplay from "./GridDisplay";
 import tailwind from "tailwindcss";
 
-const TopContent = ({
+interface GridSize {
+  x: number;
+  y: number;
+}
+
+interface TopContentProps {
+  accessToken: string;
+  selectionType: string;
+  gridSize: GridSize;
+  includeProfilePicture: boolean;
+  excludeNullImages: boolean;
+  useGradient: boolean;
+  color1: string;
+  color2: string;
+}
+
+interface ContentInstance {
+  images?: { url: string }[];
+  album?: { images: { url: string }[] };
+  external_urls?: { spotify: string };
+  name: string;
+}
+
+const TopContent: React.FC<TopContentProps> = ({
   accessToken,
   selectionType,
   gridSize,
@@ -13,10 +36,10 @@ const TopContent = ({
   color1,
   color2,
 }) => {
-  const [artistsCache, setArtistsCache] = useState([]);
-  const [tracksCache, setTracksCache] = useState([]);
-  const [content, setContent] = useState([]);
-  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+  const [artistsCache, setArtistsCache] = useState<ContentInstance[]>([]);
+  const [tracksCache, setTracksCache] = useState<ContentInstance[]>([]);
+  const [content, setContent] = useState<ContentInstance[]>([]);
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const getTopContent = async () => {
@@ -30,9 +53,9 @@ const TopContent = ({
           selectionType === "artists" ? artistsCache : tracksCache;
 
         // if the cache has the full set of data already, use it, otherwise fetch the data
-        let content = cachedData.length === totalItems ? cachedData : null;
+        let content: ContentInstance[] = cachedData.length === totalItems ? cachedData : [];
 
-        if (!content) {
+        if (content.length === 0) {
           const response = await axios.get(
             `http://localhost:8888/${contentType}`,
             {
@@ -66,9 +89,9 @@ const TopContent = ({
         if (excludeNullImages) {
           console.log("Excluding null images");
           content = content.filter((item) => {
-            // check for artists (item.images) and tracks (item.album.images)
+            // check for artists (item.images) and tracks (item.album?.images)
             const images =
-              selectionType === "artists" ? item.images : item.album.images;
+              selectionType === "artists" ? item.images : item.album?.images;
             if (images && images.length > 0 && images[0].url) {
               return true; // keep items with valid images
             } else {
@@ -89,7 +112,11 @@ const TopContent = ({
         // set the content to the filtered slice
         setContent(content.slice(0, totalGridItems));
       } catch (error) {
-        console.error(`Error fetching top ${selectionType}:`, error.message);
+        if (error instanceof Error) {
+          console.error(`Error fetching top ${selectionType}:`, error.message);
+        } else {
+          console.error(`Error fetching top ${selectionType}:`, error);
+        }
       }
     };
 
@@ -103,7 +130,11 @@ const TopContent = ({
         });
         setProfilePictureUrl(response.data.profilePictureUrl);
       } catch (error) {
-        console.error("Error fetching profile picture:", error.message);
+        if (error instanceof Error) {
+          console.error("Error fetching profile picture:", error.message);
+        } else {
+          console.error("Error fetching profile picture:", error);
+        }
       }
     };
 

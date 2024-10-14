@@ -1,7 +1,19 @@
 import React from 'react';
 import './GridItem.css';
 
-const GridItem = ({ contentInstance, defaultImageUrl }) => {
+interface ContentInstance {
+  images?: { url: string }[];
+  album?: { images: { url: string }[] };
+  external_urls?: { spotify: string };
+  name: string;
+}
+
+interface GridItemProps {
+  contentInstance: ContentInstance;
+  defaultImageUrl: string;
+}
+
+const GridItem: React.FC<GridItemProps> = ({ contentInstance, defaultImageUrl }) => {
   // check if the contentInstance has images and fall back to the default image if necessary
   // artists have a direct image property, tracks don't so use the album art instead, need to drill into the album property to access the images
   const imageUrl = contentInstance?.images?.[0]?.url || contentInstance?.album?.images?.[0]?.url || defaultImageUrl;
