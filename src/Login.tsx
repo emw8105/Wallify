@@ -8,7 +8,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h1>Welcome to Wallify</h1>
+      <h1 className="font-bold">Welcome to Wallify</h1>
       <button onClick={handleLogin} className="login-button">
         Log in with Spotify
       </button>

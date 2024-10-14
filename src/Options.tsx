@@ -51,7 +51,7 @@ const Options = ({ onSubmit }) => {
 
   return (
     <div className="options-container">
-      <h2>Design Your Grid</h2>
+      <h2 className="font-bold text-2xl">Design Your Grid</h2>
       <form onSubmit={handleSubmit}>
         <div>
           <label>

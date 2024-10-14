@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import GridDisplay from "./GridDisplay";
+import tailwind from "tailwindcss";
 
 const TopContent = ({
   accessToken,
@@ -124,17 +125,8 @@ const TopContent = ({
   ]);
 
   return (
-    <div
-      style={{
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100%",
-        minWidth: 0,
-      }}
-    >
-      <h1 style={{ marginBottom: "20px" }}>
+    <div className="flex flex-col items-center w-full min-w-0 text-center">
+      <h1 className="mb-5 text-3xl font-bold font-sans">
         Your Top{" "}
         {selectionType.charAt(0).toUpperCase() + selectionType.slice(1)}
       </h1>
