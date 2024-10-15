@@ -27,7 +27,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('spotify-header.jpg');
+    background-image: url('/assets/spotify-header.jpg');
     background-size: cover;
     background-position: center;
     opacity: 0.2;
@@ -76,7 +76,7 @@
   
   .login-button::before {
     content: '';
-    background: url('spotify-icon.png') no-repeat center center;
+    background: url('/assets/spotify-icon.png') no-repeat center center;
     background-size: contain;
     width: 24px;
     height: 24px;

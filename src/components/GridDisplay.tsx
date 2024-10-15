@@ -1,5 +1,5 @@
 import React from 'react';
-import './GridDisplay.css';
+import '../styles/GridDisplay.css';
 import GridItem from './GridItem';
 
 interface GridSize {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import Login from "./Login";
-import Options from "./Options";
-import TopContent from "./TopContent";
+import Login from "./pages/Login";
+import Options from "./components/Options";
+import TopContent from "./pages/TopContent";
 
 interface GridSize {
   x: number;

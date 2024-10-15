@@ -1,5 +1,5 @@
 import React from 'react';
-import './GridItem.css';
+import '../styles/GridItem.css';
 
 interface ContentInstance {
   images?: { url: string }[];

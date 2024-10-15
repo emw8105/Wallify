@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Options.css';
+import '../styles/Options.css';
 import html2canvas from 'html2canvas';
 
 interface GridSize {
