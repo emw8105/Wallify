@@ -109,13 +109,19 @@ const TopContent: React.FC<TopContentProps> = ({
   }, [accessToken, selectionType, gridSize, excludeNullImages, artistsCache, tracksCache]);
 
   const fetchProfilePicture = useCallback(async (retryCount: number = 0) => {
+    if (profilePictureUrl) {
+      console.log("Using cached profile picture");
+      return; // return if the profile picture is already cached
+    }
+  
     try {
       const response = await axios.get("http://localhost:8888/profile", {
         headers: {
           "x-token-key": accessToken,
         },
       });
-      setProfilePictureUrl(response.data.profilePictureUrl);
+      console.log("Successfully fetched profile picture:", response.data.profilePictureUrl);
+      setProfilePictureUrl(response.data.profilePictureUrl); // cache the profile picture URL
     } catch (error) {
       console.error("Error fetching profile picture:", error);
       if (retryCount < 3) {
@@ -125,7 +131,7 @@ const TopContent: React.FC<TopContentProps> = ({
         setError("Failed to fetch profile picture. Please try again later.");
       }
     }
-  }, [accessToken]);
+  }, [accessToken, profilePictureUrl]);
 
   useEffect(() => {
     if (includeProfilePicture) {
