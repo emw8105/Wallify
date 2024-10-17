@@ -87,7 +87,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	result, err := dynamoClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]types.AttributeValue{
-			"token_key": &types.AttributeValueMemberS{Value: tokenKey},
+			"TokenID": &types.AttributeValueMemberS{Value: tokenKey},
 		},
 	})
 	if err != nil || result.Item == nil {
@@ -188,22 +188,26 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Error generating unique key: %v", err)
 	}
 
-	// Prepare DynamoDB item
+	// create dynamo item
 	item := map[string]types.AttributeValue{
-		"token_key":    &types.AttributeValueMemberS{Value: key},
-		"accessToken":  &types.AttributeValueMemberS{Value: accessToken},
-		"refreshToken": &types.AttributeValueMemberS{Value: refreshToken},
-		"timestamp":    &types.AttributeValueMemberS{Value: time.Now().Format(time.RFC3339)},
+		"TokenID":      &types.AttributeValueMemberS{Value: key},
+		"AccessToken":  &types.AttributeValueMemberS{Value: accessToken},
+		"RefreshToken": &types.AttributeValueMemberS{Value: refreshToken},
+		"Expiration":   &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", time.Now().Unix())},
 	}
 
-	// Store the token in DynamoDB
+	log.Println("Storing token in DynamoDB:", item, tableName)
+
+	// store the token in dynamo
 	_, err = dynamoClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
 		Item:      item,
 	})
 	if err != nil {
-		log.Fatalf("Error storing token in DynamoDB: %v", err)
+		log.Fatalf("Error storing token in DynamoDB table %s: %v", tableName, err)
 	}
+
+	log.Println("Successfully stored tokens in DynamoDB for key:", key)
 
 	// redirect the user back to the React app with the token key
 	http.Redirect(w, r, fmt.Sprintf("http://localhost:3000?token_key=%s", key), http.StatusSeeOther)

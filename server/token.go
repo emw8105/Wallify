@@ -19,6 +19,8 @@ type Token struct {
 	Expiration   int64
 }
 
+var tableName = "Tokens"
+
 func generateUniqueKey() (string, error) {
 	for {
 		// generate a random 16-byte key
@@ -33,7 +35,7 @@ func generateUniqueKey() (string, error) {
 		result, err := dynamoClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
 			TableName: aws.String(tableName),
 			Key: map[string]types.AttributeValue{
-				"token_key": &types.AttributeValueMemberS{Value: key},
+				"TokenID": &types.AttributeValueMemberS{Value: key},
 			},
 		})
 
@@ -48,16 +50,16 @@ func FetchToken(tokenKey string) (*Token, error) {
 	result, err := dynamoClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]types.AttributeValue{
-			"token_key": &types.AttributeValueMemberS{Value: tokenKey},
+			"TokenID": &types.AttributeValueMemberS{Value: tokenKey},
 		},
 	})
 	if err != nil || result.Item == nil {
 		return nil, fmt.Errorf("invalid or missing token")
 	}
 
-	accessToken := result.Item["accessToken"].(*types.AttributeValueMemberS).Value
-	refreshToken := result.Item["refreshToken"].(*types.AttributeValueMemberS).Value
-	expiration, _ := strconv.ParseInt(result.Item["expiration"].(*types.AttributeValueMemberN).Value, 10, 64)
+	accessToken := result.Item["AccessToken"].(*types.AttributeValueMemberS).Value
+	refreshToken := result.Item["RefreshToken"].(*types.AttributeValueMemberS).Value
+	expiration, _ := strconv.ParseInt(result.Item["Expiration"].(*types.AttributeValueMemberN).Value, 10, 64)
 
 	return &Token{
 		TokenID:      tokenKey,
@@ -72,9 +74,9 @@ func UpdateAccessToken(tokenKey, newAccessToken string) error {
 	_, err := dynamoClient.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]types.AttributeValue{
-			"token_key": &types.AttributeValueMemberS{Value: tokenKey},
+			"TokenID": &types.AttributeValueMemberS{Value: tokenKey},
 		},
-		UpdateExpression: aws.String("SET accessToken = :newToken"),
+		UpdateExpression: aws.String("SET AccessToken = :newToken"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":newToken": &types.AttributeValueMemberS{Value: newAccessToken},
 		},

@@ -25,13 +25,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-var dynamoClient *dynamodb.Client
-var tableName = "Wallify-Tokens"
-
 var (
 	clientId     string
 	clientSecret string
 	redirectUri  string
+	dynamoClient *dynamodb.Client
 )
 
 // helper function to get the maximum concatenated 99 items from the user's top artists or tracks
@@ -89,9 +87,11 @@ func main() {
 	}
 
 	// load the AWS SDK config to connect to DynamoDB
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-west-2"))
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion("us-east-2"),
+	)
 	if err != nil {
-		log.Fatalf("Unable to load AWS SDK config, %v", err)
+		log.Fatalf("Error loading AWS SDK config: %v", err)
 	}
 
 	dynamoClient = dynamodb.NewFromConfig(cfg)
