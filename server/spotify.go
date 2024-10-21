@@ -41,7 +41,7 @@ func refreshSpotifyToken(refreshToken string) (string, error) {
 		return "", fmt.Errorf("error parsing response JSON: %w", err)
 	}
 
-	if accessToken, exists := responseData["access_token"].(string); exists {
+	if accessToken, exists := responseData["AccessToken"].(string); exists {
 		log.Println("Access token refreshed successfully")
 		return accessToken, nil
 	}

@@ -179,7 +179,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	refreshToken, ok := tokenResponse["refresh_token"].(string)
 	if !ok {
-		log.Fatalf("refresh_token token missing from response: %v", tokenResponse)
+		log.Fatalf("Refresh token token missing from response: %v", tokenResponse)
 	}
 
 	// generate a unique key for the token

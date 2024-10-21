@@ -3,7 +3,7 @@ import '../styles/Login.css';
 
 const Login = () => {
   const handleLogin = () => {
-    window.location.href = 'http://localhost:8888/login';
+    window.location.href = 'http://18.215.27.1:8888/login';
   };
 
   return (

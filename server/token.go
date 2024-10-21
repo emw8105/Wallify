@@ -19,7 +19,7 @@ type Token struct {
 	Expiration   int64
 }
 
-var tableName = "Tokens"
+var tableName = "Wallify-Tokens"
 
 func generateUniqueKey() (string, error) {
 	for {
