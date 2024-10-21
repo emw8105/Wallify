@@ -1,5 +1,5 @@
 # build the docker image
-docker build -t wallify-server .
+docker build --no-cache -t wallify-server .
 
 # save the docker image
 docker save -o wallify-server.tar wallify-server

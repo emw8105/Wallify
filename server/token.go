@@ -19,8 +19,6 @@ type Token struct {
 	Expiration   int64
 }
 
-var tableName = "Wallify-Tokens"
-
 func generateUniqueKey() (string, error) {
 	for {
 		// generate a random 16-byte key

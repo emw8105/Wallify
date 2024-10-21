@@ -128,6 +128,7 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 
 // route to handle the callback from Spotify after the user is authenticated
 func handleCallback(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Table name in handleCallback is %s", tableName)
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		log.Println("Authorization code is missing")

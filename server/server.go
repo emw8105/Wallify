@@ -32,6 +32,8 @@ var (
 	dynamoClient *dynamodb.Client
 )
 
+var tableName = "Wallify-Tokens"
+
 // helper function to get the maximum concatenated 99 items from the user's top artists or tracks
 // Spotify API limit is 50 items per request, each client requests 99, this intermediary function is used to handle the requests
 func getTopContent(accessToken, tokenKey, content string, totalContent int) ([]map[string]interface{}, error) {
@@ -100,6 +102,8 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Wallify Server: Page not found")
 	})
+
+	log.Printf("Table name in main is %s", tableName)
 
 	// login route, basically uses the Spotify API to generate an auth URL and redirects the user to the Spotify login page
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
