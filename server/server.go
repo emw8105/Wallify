@@ -121,6 +121,6 @@ func main() {
 	http.HandleFunc("/top-tracks", handleTopContent("tracks"))
 	http.HandleFunc("/profile", handleProfile)
 
-	log.Println("Server is running on http://localhost:8888")
+	log.Println("Server is running on http://18.215.27.1:8888")
 	log.Fatal(http.ListenAndServe(":8888", nil))
 }
