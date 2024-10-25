@@ -128,7 +128,6 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 
 // route to handle the callback from Spotify after the user is authenticated
 func handleCallback(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Table name in handleCallback is %s", tableName)
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		log.Println("Authorization code is missing")
@@ -197,8 +196,6 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		"Expiration":   &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", time.Now().Unix())},
 	}
 
-	log.Println("Storing token in DynamoDB:", item, tableName)
-
 	// store the token in dynamo
 	_, err = dynamoClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
@@ -209,6 +206,12 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Successfully stored tokens in DynamoDB for key:", key)
+
+	// process the user for metrics purposes
+	err = processUser(accessToken)
+	if err != nil {
+		log.Fatalf("Error processing user: %v", err)
+	}
 
 	// redirect the user back to the React app with the token key
 	http.Redirect(w, r, fmt.Sprintf("http://localhost:3000?token_key=%s", key), http.StatusSeeOther)

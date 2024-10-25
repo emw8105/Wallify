@@ -103,12 +103,10 @@ func main() {
 		fmt.Fprintf(w, "Wallify Server: Page not found")
 	})
 
-	log.Printf("Table name in main is %s", tableName)
-
 	// login route, basically uses the Spotify API to generate an auth URL and redirects the user to the Spotify login page
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		authUrl := fmt.Sprintf(
-			"https://accounts.spotify.com/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=user-top-read",
+			"https://accounts.spotify.com/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=user-top-read user-read-email user-read-private",
 			clientId, redirectUri)
 		log.Println("Generated Authorization URL:", authUrl)
 		http.Redirect(w, r, authUrl, http.StatusSeeOther)
