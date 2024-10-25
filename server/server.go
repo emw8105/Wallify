@@ -13,7 +13,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -33,44 +32,6 @@ var (
 )
 
 var tableName = "Wallify-Tokens"
-
-// helper function to get the maximum concatenated 99 items from the user's top artists or tracks
-// Spotify API limit is 50 items per request, each client requests 99, this intermediary function is used to handle the requests
-func getTopContent(accessToken, tokenKey, content string, totalContent int) ([]map[string]interface{}, error) {
-	limit := 50
-	var results []map[string]interface{}
-
-	for offset := 0; offset < totalContent; offset += limit {
-		requestLimit := min(limit, totalContent-offset)
-		url := fmt.Sprintf("https://api.spotify.com/v1/me/top/%s?limit=%d&offset=%d", content, requestLimit, offset)
-
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			return nil, fmt.Errorf("error creating request: %w", err)
-		}
-
-		resp, err := makeSpotifyRequest(req, accessToken, tokenKey, content, 0)
-		if err != nil {
-			return nil, err
-		}
-
-		var data map[string]interface{}
-		if err := json.Unmarshal(resp, &data); err != nil {
-			return nil, fmt.Errorf("error unmarshaling response: %w", err)
-		}
-
-		items, ok := data["items"].([]interface{})
-		if !ok {
-			return nil, fmt.Errorf("unexpected response format")
-		}
-
-		for _, item := range items {
-			results = append(results, item.(map[string]interface{}))
-		}
-	}
-
-	return results[:min(len(results), totalContent)], nil
-}
 
 func main() {
 	// load environment variables

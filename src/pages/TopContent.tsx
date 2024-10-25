@@ -58,7 +58,7 @@ const TopContent: React.FC<TopContentProps> = ({
   
       if (content.length === 0) {
         const response = await axios.get(
-          `http://localhost:8888/${contentType}`,
+          `http://18.215.27.1:8888/${contentType}`,
           {
             headers: {
               "x-token-key": accessToken,
@@ -115,7 +115,7 @@ const TopContent: React.FC<TopContentProps> = ({
     }
   
     try {
-      const response = await axios.get("http://localhost:8888/profile", {
+      const response = await axios.get("http://18.215.27.1:8888/profile", {
         headers: {
           "x-token-key": accessToken,
         },

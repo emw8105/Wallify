@@ -49,6 +49,7 @@ func refreshSpotifyToken(refreshToken string) (string, error) {
 }
 
 func makeSpotifyRequest(req *http.Request, accessToken, tokenKey, endpoint string, retryCount int) ([]byte, error) {
+	log.Printf("Making request to Spotify API, Endpoint: %s, AccessToken: %s, TokenKey: %s, RetryCount: %d", endpoint, accessToken, tokenKey, retryCount)
 	client := &http.Client{}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 

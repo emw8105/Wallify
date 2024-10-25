@@ -24,108 +24,6 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Max-Age", "86400")
 }
 
-func handleTopContent(contentType string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		enableCors(&w)
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		tokenKey := r.Header.Get("x-token-key")
-		log.Printf("Request received for top %s with Token Key %v\n", contentType, tokenKey)
-
-		token, err := FetchToken(tokenKey)
-		if err != nil {
-			http.Error(w, "Invalid or missing token", http.StatusUnauthorized)
-			log.Printf("Invalid or missing token")
-			return
-		}
-
-		limit := r.URL.Query().Get("limit")
-		if limit == "" {
-			limit = "50"
-		}
-
-		totalContent, err := strconv.Atoi(limit)
-		if err != nil {
-			http.Error(w, "Invalid limit", http.StatusBadRequest)
-			log.Printf("Invalid limit: %v", err)
-			return
-		}
-
-		topContent, err := getTopContent(token.AccessToken, tokenKey, contentType, totalContent)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error fetching top %s", contentType), http.StatusInternalServerError)
-			log.Printf("Error fetching top %s: %v", contentType, err)
-			return
-		}
-
-		response, err := json.Marshal(topContent)
-		if err != nil {
-			http.Error(w, "Error marshaling response", http.StatusInternalServerError)
-			log.Printf("Error marshaling response: %v", err)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(response)
-	}
-}
-
-// route to fetch the user's profile picture
-func handleProfile(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	tokenKey := r.Header.Get("x-token-key")
-	log.Printf("Request received for %v with Token Key %v\n", r.URL.Path, tokenKey)
-
-	result, err := dynamoClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		TableName: aws.String(tableName),
-		Key: map[string]types.AttributeValue{
-			"TokenID": &types.AttributeValueMemberS{Value: tokenKey},
-		},
-	})
-	if err != nil || result.Item == nil {
-		http.Error(w, "Invalid or missing token", http.StatusUnauthorized)
-		log.Printf("Invalid or missing token")
-		return
-	}
-
-	accessTokenAttr, ok := result.Item["accessToken"].(*types.AttributeValueMemberS)
-	if !ok {
-		http.Error(w, "Invalid access token format", http.StatusUnauthorized)
-		return
-	}
-	accessToken := accessTokenAttr.Value
-
-	req, _ := http.NewRequest("GET", "https://api.spotify.com/v1/me", nil)
-	response, err := makeSpotifyRequest(req, accessToken, tokenKey, "profile", 0)
-	if err != nil {
-		http.Error(w, "Error fetching profile", http.StatusInternalServerError)
-		return
-	}
-
-	// parse the profile picture, some users may not have a profile picture so lots of checks are needed
-	var profileData map[string]interface{}
-	json.Unmarshal(response, &profileData)
-	profilePictureUrl := ""
-	if images, ok := profileData["images"].([]interface{}); ok && len(images) > 0 {
-		if image, ok := images[0].(map[string]interface{}); ok {
-			if url, ok := image["url"].(string); ok {
-				profilePictureUrl = url
-			}
-		}
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"profilePictureUrl": profilePictureUrl})
-}
-
 // route to handle the callback from Spotify after the user is authenticated
 func handleCallback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
@@ -215,4 +113,135 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	// redirect the user back to the React app with the token key
 	http.Redirect(w, r, fmt.Sprintf("http://localhost:3000?token_key=%s", key), http.StatusSeeOther)
+}
+
+func handleTopContent(contentType string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		tokenKey := r.Header.Get("x-token-key")
+		log.Printf("Request received for top %s with Token Key %v\n", contentType, tokenKey)
+
+		token, err := FetchToken(tokenKey)
+		if err != nil {
+			http.Error(w, "Invalid or missing token", http.StatusUnauthorized)
+			log.Printf("Invalid or missing token")
+			return
+		}
+
+		limit := r.URL.Query().Get("limit")
+		if limit == "" {
+			limit = "50"
+		}
+
+		totalContent, err := strconv.Atoi(limit)
+		if err != nil {
+			http.Error(w, "Invalid limit", http.StatusBadRequest)
+			log.Printf("Invalid limit: %v", err)
+			return
+		}
+
+		topContent, err := getTopContent(token.AccessToken, tokenKey, contentType, totalContent)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error fetching top %s", contentType), http.StatusInternalServerError)
+			log.Printf("Error fetching top %s: %v", contentType, err)
+			return
+		}
+
+		response, err := json.Marshal(topContent)
+		if err != nil {
+			http.Error(w, "Error marshaling response", http.StatusInternalServerError)
+			log.Printf("Error marshaling response: %v", err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(response)
+	}
+}
+
+// route to fetch the user's profile picture
+func handleProfile(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// get the token key from the request header
+	tokenKey := r.Header.Get("x-token-key")
+	log.Printf("Request received for %v with Token Key %v\n", r.URL.Path, tokenKey)
+
+	// fetch the actual token from DynamoDB
+	token, err := FetchToken(tokenKey)
+	if err != nil {
+		http.Error(w, "Invalid or missing token", http.StatusUnauthorized)
+		log.Printf("Invalid or missing token")
+		return
+	}
+
+	// format the request to get the user's profile
+	req, _ := http.NewRequest("GET", "https://api.spotify.com/v1/me", nil)
+	response, err := makeSpotifyRequest(req, token.AccessToken, tokenKey, "profile", 0)
+	if err != nil {
+		http.Error(w, "Error fetching profile", http.StatusInternalServerError)
+		return
+	}
+
+	// parse the profile picture, some users may not have a profile picture so lots of checks are needed
+	var profileData map[string]interface{}
+	json.Unmarshal(response, &profileData)
+	profilePictureUrl := ""
+	if images, ok := profileData["images"].([]interface{}); ok && len(images) > 0 {
+		if image, ok := images[0].(map[string]interface{}); ok {
+			if url, ok := image["url"].(string); ok {
+				profilePictureUrl = url
+			}
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"profilePictureUrl": profilePictureUrl})
+}
+
+// helper function to get the maximum concatenated 99 items from the user's top artists or tracks
+// Spotify API limit is 50 items per request, each client requests 99, this intermediary function is used to handle the requests
+func getTopContent(accessToken, tokenKey, content string, totalContent int) ([]map[string]interface{}, error) {
+	limit := 50
+	var results []map[string]interface{}
+
+	for offset := 0; offset < totalContent; offset += limit {
+		requestLimit := min(limit, totalContent-offset)
+		url := fmt.Sprintf("https://api.spotify.com/v1/me/top/%s?limit=%d&offset=%d", content, requestLimit, offset)
+
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return nil, fmt.Errorf("error creating request: %w", err)
+		}
+
+		resp, err := makeSpotifyRequest(req, accessToken, tokenKey, content, 0)
+		if err != nil {
+			return nil, err
+		}
+
+		var data map[string]interface{}
+		if err := json.Unmarshal(resp, &data); err != nil {
+			return nil, fmt.Errorf("error unmarshaling response: %w", err)
+		}
+
+		items, ok := data["items"].([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("unexpected response format")
+		}
+
+		for _, item := range items {
+			results = append(results, item.(map[string]interface{}))
+		}
+	}
+
+	return results[:min(len(results), totalContent)], nil
 }
