@@ -7,12 +7,18 @@ const Login = () => {
   };
 
   return (
+    <>
+    <div className="powered-by-spotify">
+      <span>Powered by </span>
+      <img src="/Full_Logo_Green_CMYK.svg" alt="Powered by Spotify" />
+    </div>
     <div className="login-container">
       <h1 className="font-bold">Welcome to Wallify</h1>
       <button onClick={handleLogin} className="login-button">
         Log in with Spotify
       </button>
     </div>
+    </>
   );
 };
 

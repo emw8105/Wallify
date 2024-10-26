@@ -84,3 +84,32 @@ transform: scale(1.05);
 .login-button:active {
 transform: scale(0.95);
 }
+
+/* Styling for the "Powered by Spotify" Box */
+.powered-by-spotify {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
+  padding: 12px 16px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0.8;
+}
+
+/* Text Styling to Match Spotify's Branding */
+.powered-by-spotify span {
+  font-size: 1.0em;
+  color: #22945b;
+  font-weight: bold;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  margin-right: 4px;
+}
+
+/* Image Styling */
+.powered-by-spotify img {
+  height: auto;
+  width: 80px;
+}
