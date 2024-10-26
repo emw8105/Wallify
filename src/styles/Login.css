@@ -1,85 +1,86 @@
 /* Basic Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Body and Background */
-  body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background: linear-gradient(135deg, rgba(18,18,18,1) 0%, rgba(34,34,34,1) 50%, rgba(0,0,0,1) 100%);
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-x: hidden;
-    overflow-y: auto;
-    position: relative;
-  }
-  
-  /* Background Image */
-  body::before {
-    content: '';
-    position: fixed; /* Change this from absolute to fixed */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('/assets/spotify-header.jpg');
-    background-size: cover;
-    background-position: center;
-    opacity: 0.2;
-    z-index: -1;
-  }
-  
-  /* Main Container */
-  .login-container {
-    background: rgba(0, 0, 0, 0.75);
-    border-radius: 15px;
-    padding: 40px;
-    text-align: center;
-    max-width: 400px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-  }
-  
-  /* Title */
-  .login-container h1 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-    color: #1DB954; /* Spotify Green */
-  }
-  
-  /* Button */
-  .login-button {
-    background-color: #1DB954;
-    color: white;
-    font-size: 1.2em;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-  }
-  
-  .login-button:hover {
-    background-color: #1ed760;
-    transform: scale(1.05);
-  }
-  
-  .login-button:active {
-    transform: scale(0.95);
-  }
-  
-  .login-button::before {
-    content: '';
-    background: url('/assets/spotify-icon.png') no-repeat center center;
-    background-size: contain;
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body and Background */
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, rgba(18,18,18,1) 0%, rgba(34,34,34,1) 50%, rgba(0,0,0,1) 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Background Image */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/assets/test5.avif');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+/* Main Container */
+.login-container {
+background: rgba(0, 0, 0, 0.75);
+border-radius: 15px;
+padding: 40px;
+text-align: center;
+max-width: 400px;
+box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Title */
+.login-container h1 {
+font-size: 2.5em;
+margin-bottom: 30px;
+color: #1ed760; /* Spotify Green */
+}
+
+/* Button */
+.login-button {
+background-color: #1ed760;
+color: white;
+font-size: 1em;
+padding: 15px 25px 15px 20px;
+border: none;
+border-radius: 20px;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.3s ease;
+display: inline-flex;
+align-items: center;
+}
+
+/* Icon Inside Button */
+.login-button::before {
+content: '';
+background: url('/assets/Primary_Logo_White_CMYK.svg') no-repeat center center;
+background-size: 30px;
+width: 30px;
+height: 30px;
+margin-right: 8px;
+}
+
+/* Button Hover and Active */
+.login-button:hover {
+background-color: #1ed760;
+transform: scale(1.05);
+}
+
+.login-button:active {
+transform: scale(0.95);
+}
