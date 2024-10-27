@@ -33,6 +33,12 @@ var (
 
 var tableName = "Wallify-Tokens"
 
+// healthCheck is a simple route to check if the server is running
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "Server is up")
+}
+
 func main() {
 	// load environment variables
 	err := godotenv.Load(".env")
@@ -76,6 +82,10 @@ func main() {
 	// callback route, it's a bit more complicated so details are abstracted to the handleCallback function
 	http.HandleFunc("/callback", handleCallback)
 
+	// health check route, allows the client to check if the server is running before redirecting to the login route
+	http.HandleFunc("/health-check", healthCheck)
+
+	// routes to get the top artists, top tracks, and profile picture for the user
 	http.HandleFunc("/top-artists", handleTopContent("artists"))
 	http.HandleFunc("/top-tracks", handleTopContent("tracks"))
 	http.HandleFunc("/profile", handleProfile)

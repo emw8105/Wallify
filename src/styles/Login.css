@@ -113,3 +113,11 @@ transform: scale(0.95);
   height: auto;
   width: 80px;
 }
+
+/* Error Message Styling */
+.error-message {
+  margin-top: 20px;
+  color: #ff4d4f; /* A shade of red for errors */
+  font-size: 0.9em;
+  text-align: center;
+}
