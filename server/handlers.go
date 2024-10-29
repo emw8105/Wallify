@@ -112,7 +112,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// redirect the user back to the React app with the token key
-	http.Redirect(w, r, fmt.Sprintf("http://localhost:3000?token_key=%s", key), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("https://wallify.doypid.com/?token_key=%s", key), http.StatusSeeOther)
 }
 
 func handleTopContent(contentType string) http.HandlerFunc {
