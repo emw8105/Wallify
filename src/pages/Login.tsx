@@ -11,11 +11,11 @@ const Login = () => {
 
     try {
       // Check if the server is reachable
-      const response = await fetch('http://18.215.27.1:8888/health-check', { method: 'GET' });
+      const response = await fetch('https://wallify-server.doypid.com/health-check', { method: 'GET' });
 
       if (response.ok) {
         // Server is reachable, proceed with redirect
-        window.location.href = 'http://18.215.27.1:8888/login';
+        window.location.href = 'https://wallify-server.doypid.com/login';
       } else {
         throw new Error('Server response not OK');
       }

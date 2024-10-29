@@ -35,6 +35,7 @@ var tableName = "Wallify-Tokens"
 
 // healthCheck is a simple route to check if the server is running
 func healthCheck(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, "Server is up")
 }
@@ -72,6 +73,7 @@ func main() {
 
 	// login route, basically uses the Spotify API to generate an auth URL and redirects the user to the Spotify login page
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		authUrl := fmt.Sprintf(
 			"https://accounts.spotify.com/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=user-top-read user-read-email user-read-private",
 			clientId, redirectUri)
