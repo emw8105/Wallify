@@ -245,3 +245,48 @@ func getTopContent(accessToken, tokenKey, content string, totalContent int) ([]m
 
 	return results[:min(len(results), totalContent)], nil
 }
+
+// helper function to abstract the request process and handle token update/refresh when necessary
+func makeSpotifyRequest(req *http.Request, accessToken, tokenKey, endpoint string, retryCount int) ([]byte, error) {
+	log.Printf("Making request to Spotify API, Endpoint: %s, AccessToken: %s, TokenKey: %s, RetryCount: %d", endpoint, accessToken, tokenKey, retryCount)
+	client := &http.Client{}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode == http.StatusUnauthorized && retryCount < 1 {
+			log.Println("Access token expired, attempting to refresh token...")
+			token, err := FetchToken(tokenKey)
+			if err != nil {
+				return nil, err
+			}
+
+			// get a new access token using the refresh token
+			newAccessToken, err := refreshAccessToken(token.RefreshToken)
+			if err != nil {
+				log.Println("Failed to refresh token, returning error.")
+				return nil, fmt.Errorf("error refreshing access token: %w", err)
+			}
+
+			// update access token in dynamo
+			if err := UpdateAccessToken(tokenKey, newAccessToken); err != nil {
+				return nil, fmt.Errorf("error updating access token in DynamoDB: %w", err)
+			}
+
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", newAccessToken))
+			return makeSpotifyRequest(req, newAccessToken, tokenKey, endpoint, retryCount+1)
+		}
+		return nil, fmt.Errorf("spotify API error: %s", string(body))
+	}
+	return body, nil
+}

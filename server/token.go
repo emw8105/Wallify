@@ -1,10 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -80,4 +86,42 @@ func UpdateAccessToken(tokenKey, newAccessToken string) error {
 		},
 	})
 	return err
+}
+
+func refreshAccessToken(refreshToken string) (string, error) {
+	log.Println("Attempting to refresh access token for refresh token:", refreshToken)
+	data := url.Values{}
+	data.Set("grant_type", "refresh_token")
+	data.Set("refresh_token", refreshToken)
+
+	req, err := http.NewRequest("POST", "https://accounts.spotify.com/api/token", bytes.NewBufferString(data.Encode()))
+	if err != nil {
+		return "", fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.SetBasicAuth(clientId, clientSecret)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("error sending token request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("error reading response body: %w", err)
+	}
+
+	var responseData map[string]interface{}
+	err = json.Unmarshal(body, &responseData)
+	if err != nil {
+		return "", fmt.Errorf("error parsing response JSON: %w", err)
+	}
+
+	if accessToken, exists := responseData["AccessToken"].(string); exists {
+		log.Println("Access token refreshed successfully")
+		return accessToken, nil
+	}
+	return "", fmt.Errorf("error refreshing access token: response missing access token")
 }
