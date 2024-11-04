@@ -95,7 +95,7 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// store the token in dynamo
-	_, err = dynamoClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
+	_, err = dynamoClient.PutItem(context.Background(), &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
 		Item:      item,
 	})
