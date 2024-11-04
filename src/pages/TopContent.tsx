@@ -44,18 +44,22 @@ const TopContent: React.FC<TopContentProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getTopContent = useCallback(async (retryCount: number = 0) => {
-    if (retryCount === 0) {
+    if (retryCount === 0) { // add the loading flag and clear errors if this is the first attempt
       setIsLoading(true);
       setError(null);
     }
   
     try {
-      const totalItems = 99;
-      const contentType = selectionType === "artists" ? "top-artists" : "top-tracks";
+      const totalItems = 99; // request all 99 items stored by spotify since we will cache the results anyway
+
+      // determine the content type and the cached data source based on the selected type (artists or tracks)
+      const contentType = selectionType === "artists" ? "top-artists" : "top-tracks"; // if selectionType is not "artists", it is assumed to be "tracks"
       let cachedData = selectionType === "artists" ? artistsCache : tracksCache;
   
+      // used cached data if available and complete, otherwise initialize an empty array
       let content: ContentInstance[] = cachedData.length === totalItems ? cachedData : [];
   
+      // fetch the data only if the cache is empty
       if (content.length === 0) {
         const response = await axios.get(
           `https://wallify-server.doypid.com/${contentType}`,
@@ -70,8 +74,19 @@ const TopContent: React.FC<TopContentProps> = ({
         );
   
         console.log(`Successfully fetched top ${selectionType}:`, response.data);
+
+
+        // check if response is empty, i.e. new user without any listening history
+        if (response.data.length === 0) {
+          setError(`No ${selectionType} data available. Try again after listening to more music on Spotify.`);
+          setIsLoading(false);
+          return;
+        }
+
+        // store fetched data into content and cache it to avoid further requests
         content = response.data;
   
+        // cache the result so further requests aren't necessary
         if (selectionType === "artists") {
           setArtistsCache(content);
         } else if (selectionType === "tracks") {
@@ -81,6 +96,7 @@ const TopContent: React.FC<TopContentProps> = ({
         console.log(`Using cached ${selectionType} data`);
       }
   
+      // optionally filter out results with null or missing images
       if (excludeNullImages) {
         console.log("Excluding null images");
         content = content.filter((item) => {
@@ -89,16 +105,17 @@ const TopContent: React.FC<TopContentProps> = ({
         });
       }
   
+      // check if the grid size is larger than the available content, warn if there isnt enough
       const totalGridItems = gridSize.x * gridSize.y;
       if (content.length < totalGridItems) {
         setError(`Only ${content.length} ${selectionType} available due to missing images. Please reduce the grid size.`);
       }
   
-      setContent(content.slice(0, totalGridItems));
+      setContent(content.slice(0, totalGridItems)); // set the content to be displayed based on the grid size and update state
       setIsLoading(false); // set loading to false when data is successfully fetched
     } catch (error) {
       console.error(`Error fetching top ${selectionType}:`, error);
-      if (retryCount < 3) {
+      if (retryCount < 3) { // retry up to 3 times if the request fails
         console.log(`Retrying... (Attempt ${retryCount + 1})`);
         setTimeout(() => getTopContent(retryCount + 1), 2000);
       } else {
@@ -133,6 +150,7 @@ const TopContent: React.FC<TopContentProps> = ({
     }
   }, [accessToken, profilePictureUrl]);
 
+  // fetch the top content and profile picture when component mounts of dependencies change
   useEffect(() => {
     if (includeProfilePicture) {
       fetchProfilePicture();
