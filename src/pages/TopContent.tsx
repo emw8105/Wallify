@@ -50,14 +50,12 @@ const TopContent: React.FC<TopContentProps> = ({
     }
   
     try {
-      const totalItems = 99; // request all 99 items stored by spotify since we will cache the results anyway
-
       // determine the content type and the cached data source based on the selected type (artists or tracks)
       const contentType = selectionType === "artists" ? "top-artists" : "top-tracks"; // if selectionType is not "artists", it is assumed to be "tracks"
       let cachedData = selectionType === "artists" ? artistsCache : tracksCache;
   
       // used cached data if available and complete, otherwise initialize an empty array
-      let content: ContentInstance[] = cachedData.length === totalItems ? cachedData : [];
+      let content: ContentInstance[] = cachedData.length === 99 ? cachedData : [];
   
       // fetch the data only if the cache is empty
       if (content.length === 0) {
@@ -66,9 +64,6 @@ const TopContent: React.FC<TopContentProps> = ({
           {
             headers: {
               "x-token-key": accessToken,
-            },
-            params: {
-              limit: totalItems,
             },
           }
         );

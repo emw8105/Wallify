@@ -133,10 +133,7 @@ func handleTopContent(contentType string) http.HandlerFunc {
 			return
 		}
 
-		limit := r.URL.Query().Get("limit")
-		if limit == "" {
-			limit = "50"
-		}
+		limit := "99"
 
 		totalContent, err := strconv.Atoi(limit)
 		if err != nil {
