@@ -51,8 +51,8 @@ const Options: React.FC<OptionsProps> = ({ onSubmit }) => {
    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (gridSize.x <= 0 || gridSize.y <= 0) {
-      alert('Please enter valid grid dimensions.');
+    if (gridSize.x <= 0 || gridSize.y <= 0 || !Number.isInteger(gridSize.x) || !Number.isInteger(gridSize.y)) {
+      alert('Please enter valid grid dimensions using positive whole numbers.');
       return;
     }
 
