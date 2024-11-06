@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 
@@ -133,15 +132,9 @@ func handleTopContent(contentType string) http.HandlerFunc {
 			return
 		}
 
-		limit := "99"
+		totalContent := 99 // always return 99 items
 
-		totalContent, err := strconv.Atoi(limit)
-		if err != nil {
-			http.Error(w, "Invalid limit", http.StatusBadRequest)
-			log.Printf("Invalid limit: %v", err)
-			return
-		}
-
+		// split the request for the 99 items into multiple requests of max 50 items each
 		topContent, err := getTopContent(token.AccessToken, tokenKey, contentType, totalContent)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error fetching top %s", contentType), http.StatusInternalServerError)
