@@ -145,13 +145,16 @@ const TopContent: React.FC<TopContentProps> = ({
     }
   }, [accessToken, profilePictureUrl]);
 
-  // fetch the top content and profile picture when component mounts of dependencies change
+  // fetch the top content and profile picture when component mounts or dependencies change
   useEffect(() => {
     if (includeProfilePicture) {
       fetchProfilePicture();
     }
+  }, [accessToken, includeProfilePicture]);
+  
+  useEffect(() => {
     getTopContent();
-  }, [accessToken, selectionType, gridSize, includeProfilePicture, excludeNullImages, getTopContent, fetchProfilePicture]);
+  }, [accessToken, selectionType, gridSize, excludeNullImages, getTopContent]);
 
   return (
     <div className="flex flex-col items-center w-full min-w-0 text-center">
