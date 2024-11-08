@@ -73,17 +73,17 @@ Wallify’s architecture leverages a hybrid cloud stack optimized for performanc
     - A Record for api.yourdomain.com pointing to your EC2 instance
     - Enable SSL for the domain through Cloudflare
   
-6. EC2 Setup:
+5. EC2 Setup:
   - Install Docker, Docker Compose, and NGINX.
   - Configure NGINX as a reverse proxy for https://api.yourdomain.com to route requests to the Go server on port 8888.
 
-8. Run the Deployment Script
+6. Run the Deployment Script
   - Deploy the app with the provided bash script:
     ```bash
     ./deploy.sh
     ```
 
-3. Open [http://localhost:3000](http://localhost:3000) to view it in the browser
+7. Open [http://localhost:3000](http://localhost:3000) to view it in the browser
 
 ## Available Scripts
 
