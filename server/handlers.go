@@ -110,8 +110,15 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Error processing user: %v", err)
 	}
 
-	// redirect the user back to the React app with the token key
-	http.Redirect(w, r, fmt.Sprintf("https://wallify.doypid.com/?token_key=%s", key), http.StatusSeeOther)
+	// redirect the user back to the React app with the token key based on the origin (localhost or production)
+	var clientRedirect string
+	if strings.HasPrefix(r.Referer(), "http://localhost:3000") {
+		clientRedirect = fmt.Sprintf("http://localhost:3000/?token_key=%s", key)
+	} else {
+		clientRedirect = fmt.Sprintf("https://wallify.doypid.com/?token_key=%s", key)
+	}
+
+	http.Redirect(w, r, clientRedirect, http.StatusSeeOther)
 }
 
 func handleTopContent(contentType string) http.HandlerFunc {

@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -74,9 +75,11 @@ func main() {
 	// login route, basically uses the Spotify API to generate an auth URL and redirects the user to the Spotify login page
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		enableCors(&w)
+
 		authUrl := fmt.Sprintf(
 			"https://accounts.spotify.com/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=user-top-read user-read-email user-read-private",
-			clientId, redirectUri)
+			clientId, url.QueryEscape(redirectUri))
+
 		log.Println("Generated Authorization URL:", authUrl)
 		http.Redirect(w, r, authUrl, http.StatusSeeOther)
 	})
