@@ -26,6 +26,15 @@ interface ContentInstance {
   name: string;
 }
 
+// utility to debounce functions, helps avoid making too many requests in quick succession
+const debounce = (func: (...args: any[]) => void, delay: number) => {
+  let timer: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+};
+
 const TopContent: React.FC<TopContentProps> = ({
   accessToken,
   selectionType,
@@ -43,7 +52,7 @@ const TopContent: React.FC<TopContentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getTopContent = useCallback(async (retryCount: number = 0) => {
+  const getTopContent = useCallback(debounce(async (retryCount: number = 0) => {
     if (retryCount === 0) { // add the loading flag and clear errors if this is the first attempt
       setIsLoading(true);
       setError(null);
@@ -52,7 +61,8 @@ const TopContent: React.FC<TopContentProps> = ({
     try {
       // determine the content type and the cached data source based on the selected type (artists or tracks)
       const contentType = selectionType === "artists" ? "top-artists" : "top-tracks"; // if selectionType is not "artists", it is assumed to be "tracks"
-      let cachedData = selectionType === "artists" ? artistsCache : tracksCache;
+      const cachedData = selectionType === "artists" ? artistsCache : tracksCache;
+      let newContent = cachedData.length === 99 ? cachedData : [];
   
       // used cached data if available and complete, otherwise initialize an empty array
       let content: ContentInstance[] = cachedData.length === 99 ? cachedData : [];
@@ -77,24 +87,17 @@ const TopContent: React.FC<TopContentProps> = ({
           setIsLoading(false);
           return;
         }
-
-        // store fetched data into content and cache it to avoid further requests
-        content = response.data;
   
         // cache the result so further requests aren't necessary
-        if (selectionType === "artists") {
-          setArtistsCache(content);
-        } else if (selectionType === "tracks") {
-          setTracksCache(content);
-        }
-      } else {
-        console.log(`Using cached ${selectionType} data`);
+        newContent = response.data;
+        if (selectionType === "artists") setArtistsCache(newContent);
+        else setTracksCache(newContent);
       }
   
       // optionally filter out results with null or missing images
       if (excludeNullImages) {
         console.log("Excluding null images");
-        content = content.filter((item) => {
+        newContent = newContent.filter((item) => {
           const images = selectionType === "artists" ? item.images : item.album?.images;
           return images && images.length > 0 && images[0].url;
         });
@@ -102,11 +105,11 @@ const TopContent: React.FC<TopContentProps> = ({
   
       // check if the grid size is larger than the available content, warn if there isnt enough
       const totalGridItems = gridSize.x * gridSize.y;
-      if (content.length < totalGridItems) {
-        setError(`Only ${content.length} ${selectionType} available due to missing images. Please reduce the grid size.`);
+      if (newContent.length < totalGridItems) {
+        setError(`Only ${newContent.length} ${selectionType} available due to missing images. Please reduce the grid size.`);
       }
   
-      setContent(content.slice(0, totalGridItems)); // set the content to be displayed based on the grid size and update state
+      setContent(newContent.slice(0, totalGridItems)); // set the content to be displayed based on the grid size and update state
       setIsLoading(false); // set loading to false when data is successfully fetched
     } catch (error) {
       console.error(`Error fetching top ${selectionType}:`, error);
@@ -118,7 +121,7 @@ const TopContent: React.FC<TopContentProps> = ({
         setIsLoading(false); // set loading to false if retries are exhausted
       }
     }
-  }, [accessToken, selectionType, gridSize, excludeNullImages, artistsCache, tracksCache]);
+  }, 500), [accessToken, selectionType, gridSize, excludeNullImages, artistsCache, tracksCache]);
 
   const fetchProfilePicture = useCallback(async (retryCount: number = 0) => {
     if (profilePictureUrl) {
@@ -154,7 +157,7 @@ const TopContent: React.FC<TopContentProps> = ({
   
   useEffect(() => {
     getTopContent();
-  }, [accessToken, selectionType, gridSize, excludeNullImages, getTopContent]);
+  }, [accessToken, selectionType, getTopContent]);
 
   return (
     <div className="flex flex-col items-center w-full min-w-0 text-center">
