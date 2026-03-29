@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import GridDisplay from "../components/GridDisplay";
 import { Alert, AlertDescription, AlertTitle } from '../components/Alert';
+import { apiUrl } from "../config/api";
 
 interface GridSize {
   x: number;
@@ -70,7 +71,7 @@ const TopContent: React.FC<TopContentProps> = ({
       // fetch the data only if the cache is empty
       if (content.length === 0) {
         const response = await axios.get(
-          `https://wallify-server.doypid.com/${contentType}`,
+          apiUrl(`/${contentType}`),
           {
             headers: {
               "x-token-key": accessToken,
@@ -130,7 +131,7 @@ const TopContent: React.FC<TopContentProps> = ({
     }
   
     try {
-      const response = await axios.get("https://wallify-server.doypid.com/profile", {
+      const response = await axios.get(apiUrl("/profile"), {
         headers: {
           "x-token-key": accessToken,
         },
