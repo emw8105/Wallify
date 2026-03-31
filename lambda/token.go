@@ -108,6 +108,21 @@ func UpdateAccessToken(tokenKey, newAccessToken string) error {
 	return err
 }
 
+func DeleteToken(tokenKey string) error {
+	if tokenKey == "" {
+		return fmt.Errorf("invalid or missing token")
+	}
+
+	_, err := dynamoClient.DeleteItem(context.TODO(), &dynamodb.DeleteItemInput{
+		TableName: aws.String(tableName),
+		Key: map[string]types.AttributeValue{
+			"TokenID": &types.AttributeValueMemberS{Value: tokenKey},
+		},
+	})
+
+	return err
+}
+
 func refreshAccessToken(refreshToken string) (string, error) {
 	log.Println("Attempting to refresh access token for refresh token:", refreshToken)
 	data := url.Values{}

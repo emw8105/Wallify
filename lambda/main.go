@@ -117,7 +117,7 @@ func init() {
 	}
 
 	allowedClientRedirects = map[string]struct{}{
-		normalizeClientOrigin(defaultClientRedirect): {},
+		normalizeClientOrigin(defaultClientRedirect):   {},
 		normalizeClientOrigin("http://127.0.0.1:3000"): {},
 		normalizeClientOrigin("http://localhost:3000"): {},
 	}
@@ -177,6 +177,7 @@ func init() {
 	mux.HandleFunc("/top-artists", handleTopContent("artists"))
 	mux.HandleFunc("/top-tracks", handleTopContent("tracks"))
 	mux.HandleFunc("/profile", handleProfile)
+	mux.HandleFunc("/logout", handleLogout)
 
 	adapter = httpadapter.New(mux)
 }

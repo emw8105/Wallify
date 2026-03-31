@@ -201,6 +201,34 @@ func handleProfile(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"profilePictureUrl": profilePictureUrl})
 }
 
+func handleLogout(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	tokenKey := r.Header.Get("x-token-key")
+	if tokenKey == "" {
+		http.Error(w, "Invalid or missing token", http.StatusBadRequest)
+		return
+	}
+
+	if err := DeleteToken(tokenKey); err != nil {
+		http.Error(w, "Failed to log out", http.StatusInternalServerError)
+		log.Printf("Error deleting token %s: %v", tokenKey, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Logged out"})
+}
+
 func getTopContent(accessToken, tokenKey, content string, totalContent int) ([]map[string]interface{}, error) {
 	limit := 50
 	var results []map[string]interface{}
