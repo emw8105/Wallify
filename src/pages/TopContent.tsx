@@ -35,15 +35,6 @@ type CachedTopContent = Record<string, ContentInstance[]>;
 const getCacheKey = (selectionType: string, timeRange: TimeRange): string =>
   `${selectionType}:${timeRange}`;
 
-// utility to debounce functions, helps avoid making too many requests in quick succession
-const debounce = (func: (...args: any[]) => void, delay: number) => {
-  let timer: NodeJS.Timeout;
-  return (...args: any[]) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => func(...args), delay);
-  };
-};
-
 const TopContent: React.FC<TopContentProps> = ({
   accessToken,
   selectionType,
@@ -61,7 +52,7 @@ const TopContent: React.FC<TopContentProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const getTopContent = useCallback(debounce(async (retryCount: number = 0) => {
+  const getTopContent = useCallback(async (retryCount: number = 0) => {
     if (retryCount === 0) { // add the loading flag and clear errors if this is the first attempt
       setIsLoading(true);
       setError(null);
@@ -135,7 +126,7 @@ const TopContent: React.FC<TopContentProps> = ({
         setIsLoading(false); // set loading to false if retries are exhausted
       }
     }
-  }, 500), [accessToken, selectionType, timeRange, gridSize, excludeNullImages, topContentCache]);
+  }, [accessToken, selectionType, timeRange, gridSize, excludeNullImages, topContentCache]);
 
   const fetchProfilePicture = useCallback(async (retryCount: number = 0) => {
     if (profilePictureUrl) {
@@ -167,11 +158,15 @@ const TopContent: React.FC<TopContentProps> = ({
     if (includeProfilePicture) {
       fetchProfilePicture();
     }
-  }, [accessToken, includeProfilePicture]);
+  }, [includeProfilePicture, fetchProfilePicture]);
 
   useEffect(() => {
-    getTopContent();
-  }, [accessToken, selectionType, timeRange, getTopContent]);
+    const timeoutId = setTimeout(() => {
+      getTopContent();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [getTopContent]);
 
   return (
     <div className="flex flex-col items-center w-full min-w-0 text-center">
