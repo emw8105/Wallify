@@ -23,6 +23,15 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Max-Age", "86400")
 }
 
+func normalizeTimeRange(value string) string {
+	switch value {
+	case "short_term", "medium_term", "long_term":
+		return value
+	default:
+		return "medium_term"
+	}
+}
+
 func handleCallback(w http.ResponseWriter, r *http.Request) {
 	if clientId == "" || clientSecret == "" || redirectUri == "" {
 		http.Error(w, "Missing environment variables", http.StatusInternalServerError)
@@ -142,8 +151,12 @@ func handleTopContent(contentType string) http.HandlerFunc {
 			return
 		}
 
+		rawTimeRange := r.URL.Query().Get("time_range")
+		timeRange := normalizeTimeRange(rawTimeRange)
+		log.Printf("Top %s request time_range raw=%q normalized=%q", contentType, rawTimeRange, timeRange)
+
 		totalContent := 99
-		topContent, err := getTopContent(token.AccessToken, tokenKey, contentType, totalContent)
+		topContent, err := getTopContent(token.AccessToken, tokenKey, contentType, totalContent, timeRange)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error fetching top %s", contentType), http.StatusInternalServerError)
 			log.Printf("Error fetching top %s: %v", contentType, err)
@@ -229,13 +242,13 @@ func handleLogout(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Logged out"})
 }
 
-func getTopContent(accessToken, tokenKey, content string, totalContent int) ([]map[string]interface{}, error) {
+func getTopContent(accessToken, tokenKey, content string, totalContent int, timeRange string) ([]map[string]interface{}, error) {
 	limit := 50
 	var results []map[string]interface{}
 
 	for offset := 0; offset < totalContent; offset += limit {
 		requestLimit := min(limit, totalContent-offset)
-		url := fmt.Sprintf("https://api.spotify.com/v1/me/top/%s?limit=%d&offset=%d", content, requestLimit, offset)
+		url := fmt.Sprintf("https://api.spotify.com/v1/me/top/%s?limit=%d&offset=%d&time_range=%s", content, requestLimit, offset, timeRange)
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {

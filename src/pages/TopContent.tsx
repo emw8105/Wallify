@@ -9,9 +9,12 @@ interface GridSize {
   y: number;
 }
 
+type TimeRange = "short_term" | "medium_term" | "long_term";
+
 interface TopContentProps {
   accessToken: string;
   selectionType: string;
+  timeRange: TimeRange;
   gridSize: GridSize;
   includeProfilePicture: boolean;
   excludeNullImages: boolean;
@@ -27,6 +30,11 @@ interface ContentInstance {
   name: string;
 }
 
+type CachedTopContent = Record<string, ContentInstance[]>;
+
+const getCacheKey = (selectionType: string, timeRange: TimeRange): string =>
+  `${selectionType}:${timeRange}`;
+
 // utility to debounce functions, helps avoid making too many requests in quick succession
 const debounce = (func: (...args: any[]) => void, delay: number) => {
   let timer: NodeJS.Timeout;
@@ -39,6 +47,7 @@ const debounce = (func: (...args: any[]) => void, delay: number) => {
 const TopContent: React.FC<TopContentProps> = ({
   accessToken,
   selectionType,
+  timeRange,
   gridSize,
   includeProfilePicture,
   excludeNullImages,
@@ -46,8 +55,7 @@ const TopContent: React.FC<TopContentProps> = ({
   color1,
   color2,
 }) => {
-  const [artistsCache, setArtistsCache] = useState<ContentInstance[]>([]);
-  const [tracksCache, setTracksCache] = useState<ContentInstance[]>([]);
+  const [topContentCache, setTopContentCache] = useState<CachedTopContent>({});
   const [content, setContent] = useState<ContentInstance[]>([]);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,43 +66,48 @@ const TopContent: React.FC<TopContentProps> = ({
       setIsLoading(true);
       setError(null);
     }
-  
+
     try {
       // determine the content type and the cached data source based on the selected type (artists or tracks)
       const contentType = selectionType === "artists" ? "top-artists" : "top-tracks"; // if selectionType is not "artists", it is assumed to be "tracks"
-      const cachedData = selectionType === "artists" ? artistsCache : tracksCache;
-      let newContent = cachedData.length === 99 ? cachedData : [];
-  
+      const cacheKey = getCacheKey(selectionType, timeRange);
+      const cachedData = topContentCache[cacheKey] || [];
+      let newContent = cachedData.length > 0 ? cachedData : [];
+
       // used cached data if available and complete, otherwise initialize an empty array
-      let content: ContentInstance[] = cachedData.length === 99 ? cachedData : [];
-  
+      let content: ContentInstance[] = cachedData.length > 0 ? cachedData : [];
+
       // fetch the data only if the cache is empty
       if (content.length === 0) {
-        const response = await axios.get(
-          apiUrl(`/${contentType}`),
-          {
-            headers: {
-              "x-token-key": accessToken,
-            },
-          }
-        );
-  
-        console.log(`Successfully fetched top ${selectionType}:`, response.data);
+        const queryResponse = await axios.get(apiUrl(`/${contentType}`), {
+          headers: {
+            "x-token-key": accessToken,
+          },
+          params: {
+            time_range: timeRange,
+          },
+        });
+        const responseData = queryResponse.data;
+
+        if (!Array.isArray(responseData)) {
+          throw new Error("Unexpected top content response format");
+        }
+
+        console.log(`Successfully fetched top ${selectionType}:`, responseData);
 
 
         // check if response is empty, i.e. new user without any listening history
-        if (response.data.length === 0) {
-          setError(`No ${selectionType} data available. Try again after listening to more music on Spotify.`);
+        if (responseData.length === 0) {
+          setError(`No ${selectionType} data available for this time range. Try another range or listen to more music on Spotify.`);
           setIsLoading(false);
           return;
         }
-  
+
         // cache the result so further requests aren't necessary
-        newContent = response.data;
-        if (selectionType === "artists") setArtistsCache(newContent);
-        else setTracksCache(newContent);
+        newContent = responseData;
+        setTopContentCache((prev) => ({ ...prev, [cacheKey]: newContent }));
       }
-  
+
       // optionally filter out results with null or missing images
       if (excludeNullImages) {
         console.log("Excluding null images");
@@ -103,13 +116,13 @@ const TopContent: React.FC<TopContentProps> = ({
           return images && images.length > 0 && images[0].url;
         });
       }
-  
+
       // check if the grid size is larger than the available content, warn if there isnt enough
       const totalGridItems = gridSize.x * gridSize.y;
       if (newContent.length < totalGridItems) {
         setError(`Only ${newContent.length} ${selectionType} available due to missing images. Please reduce the grid size.`);
       }
-  
+
       setContent(newContent.slice(0, totalGridItems)); // set the content to be displayed based on the grid size and update state
       setIsLoading(false); // set loading to false when data is successfully fetched
     } catch (error) {
@@ -122,14 +135,14 @@ const TopContent: React.FC<TopContentProps> = ({
         setIsLoading(false); // set loading to false if retries are exhausted
       }
     }
-  }, 500), [accessToken, selectionType, gridSize, excludeNullImages, artistsCache, tracksCache]);
+  }, 500), [accessToken, selectionType, timeRange, gridSize, excludeNullImages, topContentCache]);
 
   const fetchProfilePicture = useCallback(async (retryCount: number = 0) => {
     if (profilePictureUrl) {
       console.log("Using cached profile picture");
       return; // return if the profile picture is already cached
     }
-  
+
     try {
       const response = await axios.get(apiUrl("/profile"), {
         headers: {
@@ -155,10 +168,10 @@ const TopContent: React.FC<TopContentProps> = ({
       fetchProfilePicture();
     }
   }, [accessToken, includeProfilePicture]);
-  
+
   useEffect(() => {
     getTopContent();
-  }, [accessToken, selectionType, getTopContent]);
+  }, [accessToken, selectionType, timeRange, getTopContent]);
 
   return (
     <div className="flex flex-col items-center w-full min-w-0 text-center">

@@ -10,6 +10,8 @@ interface GridSize {
   y: number;
 }
 
+type TimeRange = "short_term" | "medium_term" | "long_term";
+
 const TOKEN_COOKIE_NAME = "wallify_token_key";
 const TOKEN_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 
@@ -45,6 +47,7 @@ const App: React.FC = () => {
 
   // options and results
   const [selectionType, setSelectionType] = useState("artists");
+  const [timeRange, setTimeRange] = useState<TimeRange>("medium_term");
   const [gridSize, setGridSize] = useState<GridSize>({ x: 3, y: 3 });
   const [includeProfilePicture, setIncludeProfilePicture] = useState(false);
   const [generateGrid, setGenerateGrid] = useState(false);
@@ -109,6 +112,7 @@ const App: React.FC = () => {
   // gather the user's desired generation options and trigger the grid generation
   const handleOptionsSubmit = (
     type: string,
+    timeRange: TimeRange,
     size: GridSize,
     includePic: boolean,
     excludeNullImages: boolean,
@@ -117,6 +121,7 @@ const App: React.FC = () => {
     color2: string
   ) => {
     setSelectionType(type);
+    setTimeRange(timeRange);
     setGridSize(size);
     setIncludeProfilePicture(includePic);
     setExcludeNullImages(excludeNullImages);
@@ -144,6 +149,8 @@ const App: React.FC = () => {
           {console.log(
             "gridSize",
             gridSize,
+            "timeRange",
+            timeRange,
             "includeProfilePicture",
             includeProfilePicture,
             "excludeNullImages",
@@ -159,6 +166,7 @@ const App: React.FC = () => {
             <TopContent
               accessToken={accessToken}
               selectionType={selectionType}
+              timeRange={timeRange}
               gridSize={gridSize}
               includeProfilePicture={includeProfilePicture}
               excludeNullImages={excludeNullImages}
