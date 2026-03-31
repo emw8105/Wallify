@@ -130,7 +130,7 @@ func init() {
 		dynamoRegion = os.Getenv("AWS_REGION")
 	}
 	if dynamoRegion == "" {
-		dynamoRegion = "us-east-1"
+		dynamoRegion = "us-east-2"
 	}
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(dynamoRegion))

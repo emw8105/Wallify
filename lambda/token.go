@@ -41,13 +41,21 @@ func generateUniqueKey() (string, error) {
 			},
 		})
 
-		if err != nil || result.Item == nil {
+		if err != nil {
+			return "", fmt.Errorf("error checking token key uniqueness: %w", err)
+		}
+
+		if result.Item == nil {
 			return key, nil
 		}
 	}
 }
 
 func FetchToken(tokenKey string) (*Token, error) {
+	if tokenKey == "" {
+		return nil, fmt.Errorf("invalid or missing token")
+	}
+
 	result, err := dynamoClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		TableName: aws.String(tableName),
 		Key: map[string]types.AttributeValue{
@@ -58,14 +66,30 @@ func FetchToken(tokenKey string) (*Token, error) {
 		return nil, fmt.Errorf("invalid or missing token")
 	}
 
-	accessToken := result.Item["AccessToken"].(*types.AttributeValueMemberS).Value
-	refreshToken := result.Item["RefreshToken"].(*types.AttributeValueMemberS).Value
-	expiration, _ := strconv.ParseInt(result.Item["Expiration"].(*types.AttributeValueMemberN).Value, 10, 64)
+	accessAttr, ok := result.Item["AccessToken"].(*types.AttributeValueMemberS)
+	if !ok {
+		return nil, fmt.Errorf("invalid token payload: missing AccessToken")
+	}
+
+	refreshAttr, ok := result.Item["RefreshToken"].(*types.AttributeValueMemberS)
+	if !ok {
+		return nil, fmt.Errorf("invalid token payload: missing RefreshToken")
+	}
+
+	expirationAttr, ok := result.Item["Expiration"].(*types.AttributeValueMemberN)
+	if !ok {
+		return nil, fmt.Errorf("invalid token payload: missing Expiration")
+	}
+
+	expiration, err := strconv.ParseInt(expirationAttr.Value, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid token payload: bad Expiration")
+	}
 
 	return &Token{
 		TokenID:      tokenKey,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		AccessToken:  accessAttr.Value,
+		RefreshToken: refreshAttr.Value,
 		Expiration:   expiration,
 	}, nil
 }

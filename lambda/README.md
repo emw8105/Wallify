@@ -21,7 +21,7 @@ Set these in Lambda:
 
 Optional but recommended:
 
-- `DYNAMODB_REGION` (defaults to `AWS_REGION`, then `us-east-1`)
+- `DYNAMODB_REGION` (defaults to `AWS_REGION`, then `us-east-2`)
 - `TOKENS_TABLE_NAME` (defaults to `Wallify-Tokens`)
 - `USERS_TABLE_NAME` (defaults to `Wallify-Users`)
 - `DEFAULT_CLIENT_REDIRECT` (defaults to `https://wallify.doypid.com`)
