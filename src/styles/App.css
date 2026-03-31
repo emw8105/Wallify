@@ -16,3 +16,82 @@
 .App-link {
   color: #61dafb;
 }
+
+.app-container {
+  width: min(1200px, 96vw);
+  margin: 20px auto 40px;
+}
+
+.connected-spotify-tag {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0.95;
+  z-index: 20;
+}
+
+.connected-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #1ed760;
+  box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.2);
+}
+
+.connected-label {
+  font-size: 0.92rem;
+  color: #22945b;
+  font-weight: 600;
+}
+
+.connected-spotify-logo {
+  width: 80px;
+  height: auto;
+}
+
+.disconnect-button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.disconnect-button:hover {
+  border-color: #ff7373;
+  color: #ffd9d9;
+  background: rgba(255, 84, 84, 0.16);
+}
+
+.disconnect-button:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 640px) {
+  .connected-spotify-tag {
+    left: 10px;
+    top: 10px;
+    gap: 7px;
+    padding: 8px 10px;
+  }
+
+  .connected-label {
+    display: none;
+  }
+
+  .connected-spotify-logo {
+    width: 68px;
+  }
+}

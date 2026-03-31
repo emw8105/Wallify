@@ -7,9 +7,12 @@ interface GridSize {
   y: number;
 }
 
+type TimeRange = 'short_term' | 'medium_term' | 'long_term';
+
 interface OptionsProps {
   onSubmit: (
     selectionType: string,
+    timeRange: TimeRange,
     gridSize: GridSize,
     includeProfilePicture: boolean,
     excludeNullImages: boolean,
@@ -21,6 +24,7 @@ interface OptionsProps {
 
 const Options: React.FC<OptionsProps> = ({ onSubmit }) => {
   const [selectionType, setSelectionType] = useState<string>('artists');
+  const [timeRange, setTimeRange] = useState<TimeRange>('medium_term');
   const [gridSize, setGridSize] = useState<GridSize>({ x: 3, y: 3 });
   const [includeProfilePicture, setIncludeProfilePicture] = useState<boolean>(false);
   const [useGradient, setUseGradient] = useState<boolean>(false);
@@ -63,7 +67,7 @@ const Options: React.FC<OptionsProps> = ({ onSubmit }) => {
     }
 
     setIsGridGenerated(true);
-    onSubmit(selectionType, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2);
+    onSubmit(selectionType, timeRange, gridSize, includeProfilePicture, excludeNullImages, useGradient, color1, color2);
   };
 
   return (
@@ -76,6 +80,16 @@ const Options: React.FC<OptionsProps> = ({ onSubmit }) => {
             <select value={selectionType} onChange={(e) => setSelectionType(e.target.value)}>
               <option value="artists">Top Artists</option>
               <option value="tracks">Top Tracks</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>
+            Time Range:
+            <select value={timeRange} onChange={(e) => setTimeRange(e.target.value as TimeRange)}>
+              <option value="short_term">Last 4 weeks</option>
+              <option value="medium_term">Last 6 months</option>
+              <option value="long_term">Last 1 year</option>
             </select>
           </label>
         </div>

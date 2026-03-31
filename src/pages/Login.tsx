@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/Login.css';
+import { apiUrl } from '../config/api';
 
 const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -11,11 +12,12 @@ const Login = () => {
 
     try {
       // Check if the server is reachable
-      const response = await fetch('https://wallify-server.doypid.com/health-check', { method: 'GET' });
+      const response = await fetch(apiUrl('/health-check'), { method: 'GET' });
 
       if (response.ok) {
         // Server is reachable, proceed with redirect
-        window.location.href = 'https://wallify-server.doypid.com/login';
+        const clientOrigin = encodeURIComponent(window.location.origin);
+        window.location.href = apiUrl(`/login?client_origin=${clientOrigin}`);
       } else {
         throw new Error('Server response not OK');
       }

@@ -25,3 +25,5 @@ yarn-error.log*
 
 server/wallify-dev.pem
 server/wallify-server.tar
+
+lambda/lambda.exe
