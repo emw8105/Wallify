@@ -175,6 +175,9 @@ const Options: React.FC<OptionsProps> = ({ onSubmit }) => {
       {isGridGenerated && (
         <button onClick={handleDownload} className="download">Download</button>
       )}
+      <p className="options-privacy">
+        <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+      </p>
     </div>
   );
 };

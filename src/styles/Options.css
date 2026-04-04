@@ -138,3 +138,19 @@
 .options-container button.download:hover {
   background-color: #3399ff;
 }
+
+.options-privacy {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.75em;
+  color: #888;
+}
+
+.options-privacy a {
+  color: #1db954;
+  text-decoration: none;
+}
+
+.options-privacy a:hover {
+  text-decoration: underline;
+}

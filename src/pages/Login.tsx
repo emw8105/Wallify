@@ -46,6 +46,14 @@ const Login = () => {
         </button>
 
         {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+        <p className="privacy-notice">
+          By logging in, you agree to our{' '}
+          <a href="/privacy.html" target="_blank" rel="noopener noreferrer">
+            Privacy Policy
+          </a>
+          .
+        </p>
       </div>
     </>
   );

@@ -114,6 +114,22 @@ transform: scale(0.95);
   width: 80px;
 }
 
+/* Privacy Notice */
+.privacy-notice {
+  margin-top: 20px;
+  font-size: 0.78em;
+  color: #888;
+}
+
+.privacy-notice a {
+  color: #1ed760;
+  text-decoration: none;
+}
+
+.privacy-notice a:hover {
+  text-decoration: underline;
+}
+
 /* Error Message Styling */
 .error-message {
   margin-top: 20px;
