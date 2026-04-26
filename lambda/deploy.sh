@@ -25,8 +25,10 @@ zip -j lambda-deploy.zip bootstrap
 echo "Deploying to Lambda function: $FUNCTION_NAME..."
 aws lambda update-function-code \
   --function-name "$FUNCTION_NAME" \
-  --zip-file fileb://lambda-deploy.zip
+  --zip-file fileb://lambda-deploy.zip \
+  > /dev/null
 
+echo "Deployment successful."
 echo "Cleaning up build artifacts..."
 rm -f bootstrap lambda-deploy.zip
 
