@@ -48,9 +48,29 @@ const Login: React.FC<LoginProps> = ({ loginError }) => {
         {loginError && (
           <div className="dev-mode-notice">
             <p>
-              Wallify is in <strong>Spotify development mode</strong> and currently
-              limited to approved accounts. A quota extension has been submitted &mdash;
-              full access will be available once approved.
+              Wallify is in <strong>Spotify development mode</strong>, which limits
+              authentication to pre-approved accounts. As of May 2025, Spotify no longer
+              grants extended API access to personal projects (only registered businesses), so this restriction is
+              permanent.
+            </p>
+            <p>
+              To use Wallify, you can{' '}
+              <a
+                href="mailto:evannwright@gmail.com"
+                style={{ color: '#ffd95a', textDecoration: 'underline' }}
+              >
+                contact the developer
+              </a>{' '}
+              to request access, or{' '}
+              <a
+                href="https://github.com/emw8105/Wallify"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#ffd95a', textDecoration: 'underline' }}
+              >
+                clone the repo
+              </a>{' '}
+              and run it with your own Spotify API keys.
             </p>
           </div>
         )}
