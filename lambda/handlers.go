@@ -33,15 +33,28 @@ func normalizeTimeRange(value string) string {
 }
 
 func handleCallback(w http.ResponseWriter, r *http.Request) {
+	// Resolve the client origin up front so every error path can redirect back to the app.
+	clientRedirectOrigin := resolveClientRedirectFromRequest(r)
+
+	// Spotify sends ?error=access_denied (and similar) when the user is not permitted
+	// to authorise the app (e.g. the app is in development mode and the account has not
+	// been added to the allowlist in the Spotify Developer Portal).
+	if spotifyError := r.URL.Query().Get("error"); spotifyError != "" {
+		log.Printf("Spotify returned error during OAuth: %s", spotifyError)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=not_authorized", http.StatusSeeOther)
+		return
+	}
+
 	if clientId == "" || clientSecret == "" || redirectUri == "" {
-		http.Error(w, "Missing environment variables", http.StatusInternalServerError)
+		log.Println("Missing environment variables in handleCallback")
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		log.Println("Authorization code is missing")
-		http.Error(w, "Authorization code is missing", http.StatusBadRequest)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=auth_failed", http.StatusSeeOther)
 		return
 	}
 
@@ -52,8 +65,8 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 
 	req, err := http.NewRequest("POST", "https://accounts.spotify.com/api/token", strings.NewReader(data.Encode()))
 	if err != nil {
-		http.Error(w, "Error creating token request", http.StatusInternalServerError)
 		log.Printf("Error creating request: %v", err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
@@ -63,44 +76,44 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		http.Error(w, "Error sending token request", http.StatusInternalServerError)
 		log.Printf("Error sending token request: %v", err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		http.Error(w, "Error reading Spotify response", http.StatusInternalServerError)
 		log.Printf("Error reading response body: %v", err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
 	var tokenResponse map[string]interface{}
 	if err := json.Unmarshal(body, &tokenResponse); err != nil {
-		http.Error(w, "Error parsing Spotify response", http.StatusInternalServerError)
 		log.Printf("Error unmarshalling token response: %v", err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
 	accessToken, ok := tokenResponse["access_token"].(string)
 	if !ok {
-		http.Error(w, "Spotify response missing access_token", http.StatusBadGateway)
 		log.Printf("Access token missing from response: %v", tokenResponse)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
 	refreshToken, ok := tokenResponse["refresh_token"].(string)
 	if !ok {
-		http.Error(w, "Spotify response missing refresh_token", http.StatusBadGateway)
 		log.Printf("Refresh token missing from response: %v", tokenResponse)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
 	key, err := generateUniqueKey()
 	if err != nil {
-		http.Error(w, "Error generating token key", http.StatusInternalServerError)
 		log.Printf("Error generating unique key: %v", err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
@@ -116,20 +129,18 @@ func handleCallback(w http.ResponseWriter, r *http.Request) {
 		Item:      item,
 	})
 	if err != nil {
-		http.Error(w, "Error storing token", http.StatusInternalServerError)
 		log.Printf("Error storing token in DynamoDB table %s: %v", tableName, err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
 	if err := processUser(accessToken); err != nil {
-		http.Error(w, "Error processing user", http.StatusInternalServerError)
 		log.Printf("Error processing user: %v", err)
+		http.Redirect(w, r, clientRedirectOrigin+"/?login_error=server_error", http.StatusSeeOther)
 		return
 	}
 
-	clientRedirectOrigin := resolveClientRedirectFromRequest(r)
 	clientRedirect := fmt.Sprintf("%s/?token_key=%s", clientRedirectOrigin, key)
-
 	http.Redirect(w, r, clientRedirect, http.StatusSeeOther)
 }
 

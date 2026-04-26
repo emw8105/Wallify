@@ -44,6 +44,7 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const tokensFetchedRef = useRef(false);
   const [accessToken, setAccessToken] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   // options and results
   const [selectionType, setSelectionType] = useState("artists");
@@ -63,6 +64,7 @@ const App: React.FC = () => {
       const paramAccessToken = params.get("token_key");
       const cookieAccessToken = getCookieValue(TOKEN_COOKIE_NAME);
       const resolvedToken = paramAccessToken || cookieAccessToken;
+      const loginErrorParam = params.get("login_error");
 
       if (resolvedToken) {
         setAccessToken(resolvedToken);
@@ -80,6 +82,9 @@ const App: React.FC = () => {
         );
 
         // clear the URL parameters after saving the values to prevent reuse
+        window.history.replaceState({}, document.title, "/");
+      } else if (loginErrorParam) {
+        setLoginError(loginErrorParam);
         window.history.replaceState({}, document.title, "/");
       }
     }
@@ -135,7 +140,7 @@ const App: React.FC = () => {
   return (
     <div className={isLoggedIn ? "app-container" : "login-container"}>
       {!isLoggedIn ? (
-        <Login />
+        <Login loginError={loginError} />
       ) : (
         <>
           <div className="connected-spotify-tag" aria-label="Spotify session controls">

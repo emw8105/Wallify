@@ -114,6 +114,26 @@ transform: scale(0.95);
   width: 80px;
 }
 
+/* Dev-Mode Notice Banner */
+.dev-mode-notice {
+  background-color: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.45);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.dev-mode-notice p {
+  font-size: 0.82em;
+  color: #f5c842;
+  line-height: 1.55;
+}
+
+.dev-mode-notice strong {
+  color: #ffd95a;
+}
+
 /* Privacy Notice */
 .privacy-notice {
   margin-top: 20px;
